@@ -164,9 +164,9 @@ const PrivacyPolicyTab: React.FC = () => {
       ar: 'اتصل بنا'
     },
     contactUsText: {
-      en: 'If you have any questions about our Privacy Policy, please contact us at: privacy@noorix.app',
-      ru: 'Если у вас есть вопросы о нашей политике конфиденциальности, пожалуйста, свяжитесь с нами по адресу: privacy@noorix.app',
-      ar: 'إذا كانت لديك أي أسئلة حول سياسة الخصوصية الخاصة بنا، يرجى الاتصال بنا على: privacy@noorix.app'
+      en: 'If you have any questions about our Privacy Policy, please contact us at: byteflipper.business@gmail.com',
+      ru: 'Если у вас есть вопросы о нашей политике конфиденциальности, пожалуйста, свяжитесь с нами по адресу: byteflipper.business@gmail.com',
+      ar: 'إذا كانت لديك أي أسئلة حول سياسة الخصوصية الخاصة بنا، يرجى الاتصال بنا على: byteflipper.business@gmail.com'
     },
     lastUpdated: {
       en: 'Last updated: March 1, 2025',
