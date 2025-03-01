@@ -1,55 +1,54 @@
-# Noorix - Prayer Time Tracker
+# Noorix <img src="public/favicon.svg" alt="Noorix Logo" width="25" height="25">
 
-![Noorix Logo](public/favicon.svg)
+> Современное приложение для отслеживания времени молитв мусульман
 
-Noorix is a modern, responsive web application designed to help Muslims track prayer times, Ramadan schedules, and more. Built with React, TypeScript, and Tailwind CSS, it offers a seamless experience across devices.
+## 📋 Обзор
 
-## Features
+Noorix - это современное, адаптивное веб-приложение, разработанное для помощи мусульманам в отслеживании времени молитв, расписания Рамадана и другой важной информации. Создано с использованием React, TypeScript и Tailwind CSS для обеспечения безупречного пользовательского опыта на всех устройствах.
 
-- **Prayer Time Tracking**: Accurate prayer times based on your location
-- **Ramadan Calendar**: Track Ramadan days, iftar and suhoor times
-- **Location Detection**: Automatic location detection or manual city selection
-- **Customizable Settings**: 
-  - Multiple calculation methods (15+ options)
-  - Madhab selection for Asr prayer calculation
-  - 12/24 hour time format
-  - Multilingual support (English/Russian/Arabic)
-  - Prayer time notifications
-- **Moon Phase Indicator**: Visual display of current moon phase
-- **Iftar Timer**: Countdown to iftar during Ramadan
-- **Responsive Design**: Works on mobile, tablet, and desktop devices
-- **Privacy Policy**: Transparent information about data usage
+## ✨ Возможности
 
-## Technologies Used
+| Функция | Описание |
+|---------|----------|
+| 🕌 **Время молитв** | Точное время молитв на основе вашего местоположения |
+| 🌙 **Календарь Рамадана** | Отслеживание дней Рамадана, времени ифтара и сухура |
+| 📍 **Определение местоположения** | Автоматическое определение местоположения или ручной выбор города |
+| ⚙️ **Настраиваемые параметры** | Множество методов расчета (15+ вариантов), выбор мазхаба для расчета времени молитвы Аср, формат времени 12/24 часа, многоязычная поддержка (английский/русский/арабский), уведомления о времени молитв |
+| 🌓 **Индикатор фазы луны** | Визуальное отображение текущей фазы луны |
+| ⏱️ **Таймер ифтара** | Обратный отсчет до ифтара во время Рамадана |
+| 📱 **Адаптивный дизайн** | Работает на мобильных устройствах, планшетах и компьютерах |
+| 🔒 **Политика конфиденциальности** | Прозрачная информация об использовании данных |
+
+## 🛠️ Используемые технологии
 
 - **Frontend**: React, TypeScript, Tailwind CSS
-- **State Management**: React Context API
-- **API Integration**: Aladhan API for prayer times
-- **Icons**: Lucide React
-- **Deployment**: Firebase Hosting
-- **Analytics**: Firebase Analytics
+- **Управление состоянием**: React Context API
+- **Интеграция API**: Aladhan API для времени молитв
+- **Иконки**: Lucide React
+- **Развертывание**: Firebase Hosting
+- **Аналитика**: Firebase Analytics
 
-## Getting Started
+## 🚀 Начало работы
 
-### Prerequisites
+### Предварительные требования
 
-- Node.js (v16 or higher)
-- npm or yarn
+- Node.js (v16 или выше)
+- npm или yarn
 
-### Installation
+### Установка
 
-1. Clone the repository:
+1. Клонируйте репозиторий:
    ```bash
    git clone https://github.com/yourusername/noorix-app.git
    cd noorix-app
    ```
 
-2. Install dependencies:
+2. Установите зависимости:
    ```bash
    npm install
    ```
 
-3. Create a `.env` file in the root directory with your Firebase configuration:
+3. Создайте файл `.env` в корневом каталоге с конфигурацией Firebase:
    ```
    VITE_FIREBASE_API_KEY=your-api-key
    VITE_FIREBASE_AUTH_DOMAIN=your-auth-domain
@@ -60,82 +59,82 @@ Noorix is a modern, responsive web application designed to help Muslims track pr
    VITE_FIREBASE_MEASUREMENT_ID=your-measurement-id
    ```
    
-   Note: A `.env.example` file is provided as a template.
+   Примечание: Файл `.env.example` предоставлен в качестве шаблона.
 
-4. Start the development server:
+4. Запустите сервер разработки:
    ```bash
    npm run dev
    ```
 
-5. Open [http://localhost:5173](http://localhost:5173) to view the app in your browser.
+5. Откройте [http://localhost:5173](http://localhost:5173) для просмотра приложения в браузере.
 
-### Building for Production
+### Сборка для продакшена
 
 ```bash
 npm run build
 ```
 
-### Deployment
+### Деплой
 
 ```bash
 npm run deploy
 ```
 
-## Project Structure
+## 📁 Структура проекта
 
 ```
 noorix-app/
-├── public/                # Static assets
+├── public/                # Статические ресурсы
 ├── src/
-│   ├── components/        # React components
-│   ├── context/           # React context providers
-│   ├── data/              # Static data (cities, etc.)
-│   ├── firebase/          # Firebase configuration
-│   ├── services/          # API services
-│   ├── types/             # TypeScript type definitions
-│   ├── App.tsx            # Main App component
-│   └── main.tsx           # Application entry point
-├── .env                   # Environment variables (not committed to git)
-├── .env.example           # Example environment variables template
-├── index.html             # HTML template
-├── package.json           # Project dependencies
-├── tailwind.config.js     # Tailwind CSS configuration
-├── tsconfig.json          # TypeScript configuration
-└── vite.config.ts         # Vite configuration
+│   ├── components/        # React компоненты
+│   ├── context/           # React context провайдеры
+│   ├── data/              # Статические данные (города и т.д.)
+│   ├── firebase/          # Конфигурация Firebase
+│   ├── services/          # API сервисы
+│   ├── types/             # TypeScript определения типов
+│   ├── App.tsx            # Основной компонент приложения
+│   └── main.tsx           # Точка входа в приложение
+├── .env                   # Переменные окружения (не коммитятся в git)
+├── .env.example           # Шаблон переменных окружения
+├── index.html             # HTML шаблон
+├── package.json           # Зависимости проекта
+├── tailwind.config.js     # Конфигурация Tailwind CSS
+├── tsconfig.json          # Конфигурация TypeScript
+└── vite.config.ts         # Конфигурация Vite
 ```
 
-## Key Components
+## 🧩 Ключевые компоненты
 
-- **PrayerTimesTab**: Displays daily prayer times and next prayer countdown
-- **RamadanTab**: Shows Ramadan calendar, tracker, and related information
-- **LocationTab**: Handles location detection and city selection
-- **SettingsTab**: Manages user preferences and application settings
-- **PrivacyPolicyTab**: Provides information about data usage and privacy practices
-- **IftarTimer**: Countdown timer for iftar during Ramadan
-- **MoonPhase**: Displays current moon phase with visual indicator
+- **PrayerTimesTab**: Отображает ежедневное время молитв и обратный отсчет до следующей молитвы
+- **RamadanTab**: Показывает календарь Рамадана, трекер и связанную информацию
+- **LocationTab**: Управляет определением местоположения и выбором города
+- **SettingsTab**: Управляет пользовательскими настройками и параметрами приложения
+- **PrivacyPolicyTab**: Предоставляет информацию об использовании данных и политике конфиденциальности
+- **IftarTimer**: Таймер обратного отсчета до ифтара во время Рамадана
+- **MoonPhase**: Отображает текущую фазу луны с визуальным индикатором
 
-## API Integration
+## 🔌 Интеграция API
 
-The application uses the [Aladhan API](https://aladhan.com/prayer-times-api) to fetch accurate prayer times based on location and calculation method preferences.
+Приложение использует [Aladhan API](https://aladhan.com/prayer-times-api) для получения точного времени молитв на основе местоположения и предпочтений метода расчета.
 
-## Contributing
+## 🤝 Вклад в проект
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Мы приветствуем ваш вклад! Пожалуйста, не стесняйтесь отправлять Pull Request.
 
-## License
+## 📄 Лицензия
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Этот проект лицензирован под лицензией MIT - подробности см. в файле LICENSE.
 
-## Developer
+## 👨‍💻 Разработчик
 
 - **ByteFlipper**
-  - Website: [byteflipper.web.app](https://byteflipper.web.app)
+  - Сайт: [byteflipper.web.app](https://byteflipper.web.app)
   - Telegram: [t.me/byteflipper](https://t.me/byteflipper)
   - VK: [vk.com/byteflipper](https://vk.com/byteflipper)
 
-## Acknowledgements
+## 🙏 Благодарности
 
-- [Aladhan API](https://aladhan.com/prayer-times-api) for providing prayer time data
-- [Tailwind CSS](https://tailwindcss.com/) for styling
-- [Lucide React](https://lucide.dev/) for beautiful icons
-- [Firebase](https://firebase.google.com/) for hosting and analytics
+- [Aladhan API](https://aladhan.com/prayer-times-api) за предоставление данных о времени молитв
+- [Tailwind CSS](https://tailwindcss.com/) за стилизацию
+- [Lucide React](https://lucide.dev/) за красивые иконки
+- [Firebase](https://firebase.google.com/) за хостинг и аналитику

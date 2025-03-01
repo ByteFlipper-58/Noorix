@@ -6,18 +6,75 @@
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Метатеги для мобильных устройств -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="apple-mobile-web-app-title" content="Noorix" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Цветовые схемы -->
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#111827" />
+    <meta name="msapplication-TileColor" content="#111827" />
+    <meta name="msapplication-navbutton-color" content="#111827" />
+
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Noorix - Prayer Time Tracker</title>
-    <meta name="description" content="Track prayer times and iftar schedules with automatic location detection" />
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Noorix - Prayer Time Tracker" />
+    <meta name="description" content="Track prayer times and iftar schedules with automatic location detection. Accurate prayer times based on your location with multiple calculation methods." />
+    <meta name="keywords" content="prayer times, muslim prayer, islamic prayer, ramadan, iftar, suhoor, qibla, azan, salah, namaz, prayer app" />
+    <meta name="author" content="ByteFlipper" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://noorix.app/" />
+    <meta property="og:title" content="Noorix - Prayer Time Tracker" />
+    <meta property="og:description" content="Track prayer times and iftar schedules with automatic location detection. Accurate prayer times based on your location with multiple calculation methods." />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://noorix.app/" />
+    <meta property="twitter:title" content="Noorix - Prayer Time Tracker" />
+    <meta property="twitter:description" content="Track prayer times and iftar schedules with automatic location detection. Accurate prayer times based on your location with multiple calculation methods." />
+    <meta property="twitter:image" content="/og-image.png" />
+
+    <!-- Canonical URL -->
+    <meta rel="canonical" href="https://noorix.app/" />
+
     <!-- Add Arabic font support -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+      :root {
+        color-scheme: dark light;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const themeColor = window.matchMedia("(prefers-color-scheme: dark)").matches ? "#111827" : "#111827";
+        document.querySelector('meta[name="theme-color"]').setAttribute("content", themeColor);
+      });
+    </script>
+
+    <!-- No JavaScript fallback -->
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: 'Roboto', sans-serif;">
+        <h1 style="color: #10b981; margin-bottom: 1rem;">Noorix - Prayer Time Tracker</h1>
+        <p>Please enable JavaScript to use this application.</p>
+        <p>Пожалуйста, включите JavaScript для использования этого приложения.</p>
+        <p style="font-family: 'Amiri', serif;">الرجاء تمكين JavaScript لاستخدام هذا التطبيق.</p>
+      </div>
+    </noscript>
   </body>
 </html>
