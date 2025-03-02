@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { formatTime, getNextPrayer, scheduleNotification } from '../services/prayerTimeService';
 import { Clock, AlertCircle, MapPin, MoveRight } from 'lucide-react';
@@ -8,7 +9,8 @@ import IftarTimer from './IftarTimer';
 import { getPrayerNameTranslation } from '../services/languageService';
 
 const PrayerTimesTab: React.FC = () => {
-  const { prayerTimes, loading, error, settings, location, setActiveTab } = useAppContext();
+  const { prayerTimes, loading, error, settings, location } = useAppContext();
+  const navigate = useNavigate();
   const [nextPrayer, setNextPrayer] = useState<NextPrayer | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [moonPhase, setMoonPhase] = useState<number>(0);
@@ -91,6 +93,16 @@ const PrayerTimesTab: React.FC = () => {
       en: 'Current Moon Phase',
       ru: 'Текущая фаза Луны',
       ar: 'طور القمر الحالي'
+    },
+    rakats: {
+      en: 'rakats',
+      ru: 'раката',
+      ar: 'ركعات'
+    },
+    iftar: {
+      en: 'Iftar',
+      ru: 'Ифтар',
+      ar: 'إفطار'
     }
   };
   
@@ -124,7 +136,7 @@ const PrayerTimesTab: React.FC = () => {
           {translations.pleaseSetLocation[settings.language]}
         </p>
         <button 
-          onClick={() => setActiveTab('location')}
+          onClick={() => navigate('/location')}
           className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors flex items-center mx-auto"
         >
           <MapPin size={18} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />
@@ -162,6 +174,15 @@ const PrayerTimesTab: React.FC = () => {
   
   const moonEmoji = getMoonPhaseEmoji(moonPhase);
   const phaseName = getMoonPhaseName(moonPhase, settings.language);
+  
+  // Prayer rakats information
+  const prayerRakats = {
+    Fajr: 2,
+    Dhuhr: 4,
+    Asr: 4,
+    Maghrib: 3,
+    Isha: 4
+  };
   
   return (
     <div className={`${isRTL ? 'text-right' : ''}`}>
@@ -205,6 +226,8 @@ const PrayerTimesTab: React.FC = () => {
                 time={formatPrayerTime(prayerTimes.timings.Fajr)} 
                 isNext={nextPrayer?.name === 'Fajr'} 
                 isRTL={isRTL}
+                rakats={prayerRakats.Fajr}
+                rakatLabel={translations.rakats[settings.language]}
               />
               <PrayerTimeRow 
                 name={getPrayerNameTranslation('Sunrise', settings.language)} 
@@ -217,29 +240,34 @@ const PrayerTimesTab: React.FC = () => {
                 time={formatPrayerTime(prayerTimes.timings.Dhuhr)} 
                 isNext={nextPrayer?.name === 'Dhuhr'} 
                 isRTL={isRTL}
+                rakats={prayerRakats.Dhuhr}
+                rakatLabel={translations.rakats[settings.language]}
               />
               <PrayerTimeRow 
                 name={getPrayerNameTranslation('Asr', settings.language)} 
                 time={formatPrayerTime(prayerTimes.timings.Asr)} 
                 isNext={nextPrayer?.name === 'Asr'} 
                 isRTL={isRTL}
+                rakats={prayerRakats.Asr}
+                rakatLabel={translations.rakats[settings.language]}
               />
               <PrayerTimeRow 
                 name={getPrayerNameTranslation('Maghrib', settings.language)} 
                 time={formatPrayerTime(prayerTimes.timings.Maghrib)} 
                 isNext={nextPrayer?.name === 'Maghrib'} 
                 isIftar 
-                iftarLabel={
-                  settings.language === 'en' ? 'Iftar' : 
-                  settings.language === 'ru' ? 'Ифтар' : 'إفطار'
-                } 
+                iftarLabel={translations.iftar[settings.language]} 
                 isRTL={isRTL}
+                rakats={prayerRakats.Maghrib}
+                rakatLabel={translations.rakats[settings.language]}
               />
               <PrayerTimeRow 
                 name={getPrayerNameTranslation('Isha', settings.language)} 
                 time={formatPrayerTime(prayerTimes.timings.Isha)} 
                 isNext={nextPrayer?.name === 'Isha'} 
                 isRTL={isRTL}
+                rakats={prayerRakats.Isha}
+                rakatLabel={translations.rakats[settings.language]}
               />
             </>
           )}
@@ -268,6 +296,8 @@ interface PrayerTimeRowProps {
   isIftar?: boolean;
   iftarLabel?: string;
   isRTL?: boolean;
+  rakats?: number;
+  rakatLabel?: string;
 }
 
 const PrayerTimeRow: React.FC<PrayerTimeRowProps> = ({ 
@@ -277,28 +307,37 @@ const PrayerTimeRow: React.FC<PrayerTimeRowProps> = ({
   isInfo, 
   isIftar, 
   iftarLabel = 'Iftar',
-  isRTL = false
+  isRTL = false,
+  rakats,
+  rakatLabel = 'rakats'
 }) => {
   return (
     <div className={`
-      flex justify-between items-center p-4
+      flex items-center p-4
       ${isNext ? 'bg-green-900/20' : ''}
       ${isInfo ? 'bg-gray-700/30 text-gray-400' : ''}
     `}>
-      <div className="flex items-center">
-        <span className={`
-          font-medium
-          ${isNext ? 'text-green-400' : ''}
-        `}>
-          {name}
-        </span>
-        {isIftar && (
-          <span className={`${isRTL ? 'mr-2' : 'ml-2'} px-2 py-0.5 bg-amber-900/30 text-amber-400 text-xs rounded-full`}>
-            {iftarLabel}
-          </span>
-        )}
-      </div>
       <span className={`
+        font-medium mr-2
+        ${isNext ? 'text-green-400' : ''}
+      `}>
+        {name}
+      </span>
+      
+      {isIftar && (
+        <span className={`px-2 py-0.5 bg-amber-900/30 text-amber-400 text-xs rounded-full mx-2 flex items-center`}>
+          {iftarLabel}
+        </span>
+      )}
+      
+      {rakats !== undefined && (
+        <span className={`px-2 py-0.5 bg-blue-900/30 text-blue-400 text-xs rounded-full mx-2 flex items-center`}>
+          {rakats} {rakatLabel}
+        </span>
+      )}
+      
+      <span className={`
+        ml-auto
         ${isNext ? 'text-green-400 font-medium' : ''}
       `}>
         {time}

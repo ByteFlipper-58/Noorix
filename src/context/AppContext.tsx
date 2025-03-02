@@ -12,8 +12,6 @@ interface AppContextType {
   loading: boolean;
   error: string | null;
   refreshPrayerTimes: () => Promise<void>;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
 }
 
 const defaultSettings: UserSettings = {
@@ -40,7 +38,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('prayer');
 
   useEffect(() => {
     localStorage.setItem('prayerTimeSettings', JSON.stringify(settings));
@@ -110,9 +107,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         prayerTimes,
         loading,
         error,
-        refreshPrayerTimes,
-        activeTab,
-        setActiveTab,
+        refreshPrayerTimes
       }}
     >
       {children}

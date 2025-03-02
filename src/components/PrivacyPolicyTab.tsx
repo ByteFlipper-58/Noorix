@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { ArrowLeft } from 'lucide-react';
 
 const PrivacyPolicyTab: React.FC = () => {
-  const { settings, setActiveTab } = useAppContext();
+  const { settings } = useAppContext();
+  const navigate = useNavigate();
   const isRussian = settings.language === 'ru';
   const isArabic = settings.language === 'ar';
   
@@ -164,9 +166,9 @@ const PrivacyPolicyTab: React.FC = () => {
       ar: 'اتصل بنا'
     },
     contactUsText: {
-      en: 'If you have any questions about our Privacy Policy, please contact us at: byteflipper.business@gmail.com',
-      ru: 'Если у вас есть вопросы о нашей политике конфиденциальности, пожалуйста, свяжитесь с нами по адресу: byteflipper.business@gmail.com',
-      ar: 'إذا كانت لديك أي أسئلة حول سياسة الخصوصية الخاصة بنا، يرجى الاتصال بنا على: byteflipper.business@gmail.com'
+      en: 'If you have any questions about our Privacy Policy, please contact us at: privacy@noorix.app',
+      ru: 'Если у вас есть вопросы о нашей политике конфиденциальности, пожалуйста, свяжитесь с нами по адресу: privacy@noorix.app',
+      ar: 'إذا كانت لديك أي أسئلة حول سياسة الخصوصية الخاصة بنا، يرجى الاتصال بنا على: privacy@noorix.app'
     },
     lastUpdated: {
       en: 'Last updated: March 1, 2025',
@@ -178,7 +180,7 @@ const PrivacyPolicyTab: React.FC = () => {
   return (
     <div className={`max-w-3xl mx-auto ${isArabic ? 'text-right' : ''}`}>
       <button 
-        onClick={() => setActiveTab('settings')}
+        onClick={() => navigate('/settings')}
         className={`flex items-center text-green-500 hover:text-green-400 mb-4 transition-colors ${isArabic ? 'flex-row-reverse' : ''}`}
       >
         <ArrowLeft size={18} className={`${isArabic ? 'ml-1' : 'mr-1'}`} />

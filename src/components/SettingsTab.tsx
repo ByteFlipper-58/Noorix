@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { getCalculationMethodName, getMadhabName } from '../data/cities';
 import { Bell, BellOff, Clock, Globe, Shield, Code } from 'lucide-react';
@@ -6,7 +7,8 @@ import { requestNotificationPermission } from '../services/prayerTimeService';
 import { CalculationMethod, MadhabType } from '../types';
 
 const SettingsTab: React.FC = () => {
-  const { settings, updateSettings, setActiveTab } = useAppContext();
+  const { settings, updateSettings } = useAppContext();
+  const navigate = useNavigate();
   
   const handleCalculationMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateSettings({ calculationMethod: Number(e.target.value) as CalculationMethod });
@@ -299,7 +301,7 @@ const SettingsTab: React.FC = () => {
             {translations.privacy[settings.language]}
           </h3>
           <button
-            onClick={() => setActiveTab('privacy')}
+            onClick={() => navigate('/privacy')}
             className="w-full py-3 px-4 rounded-lg border border-gray-700 hover:bg-gray-700 transition-colors flex items-center justify-center"
           >
             <Shield size={18} className={`${isArabic ? 'ml-2' : 'mr-2'}`} />

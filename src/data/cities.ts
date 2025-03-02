@@ -1,4 +1,6 @@
 import { City } from '../types';
+import { getTranslation } from '../localization';
+import { Language } from '../types';
 
 export const popularCities: City[] = [
   // Existing cities
@@ -126,34 +128,14 @@ export const getMoonPhaseEmoji = (phase: number): string => {
   return "🌘"; // Waning Crescent
 };
 
-export const getMoonPhaseName = (phase: number, language: 'en' | 'ru' | 'ar'): string => {
+export const getMoonPhaseName = (phase: number, language: Language): string => {
   // 0 = New Moon, 0.25 = First Quarter, 0.5 = Full Moon, 0.75 = Last Quarter, 1 = New Moon
-  if (language === 'en') {
-    if (phase < 0.05 || phase > 0.95) return "New Moon";
-    if (phase < 0.20) return "Waxing Crescent";
-    if (phase < 0.30) return "First Quarter";
-    if (phase < 0.45) return "Waxing Gibbous";
-    if (phase < 0.55) return "Full Moon";
-    if (phase < 0.70) return "Waning Gibbous";
-    if (phase < 0.80) return "Last Quarter";
-    return "Waning Crescent";
-  } else if (language === 'ru') {
-    if (phase < 0.05 || phase > 0.95) return "Новолуние";
-    if (phase < 0.20) return "Растущий серп";
-    if (phase < 0.30) return "Первая четверть";
-    if (phase < 0.45) return "Растущая луна";
-    if (phase < 0.55) return "Полнолуние";
-    if (phase < 0.70) return "Убывающая луна";
-    if (phase < 0.80) return "Последняя четверть";
-    return "Убывающий серп";
-  } else {
-    if (phase < 0.05 || phase > 0.95) return "القمر الجديد";
-    if (phase < 0.20) return "الهلال المتزايد";
-    if (phase < 0.30) return "التربيع الأول";
-    if (phase < 0.45) return "الأحدب المتزايد";
-    if (phase < 0.55) return "البدر";
-    if (phase < 0.70) return "الأحدب المتناقص";
-    if (phase < 0.80) return "التربيع الأخير";
-    return "الهلال المتناقص";
-  }
+  if (phase < 0.05 || phase > 0.95) return getTranslation(language, 'moonPhases.newMoon');
+  if (phase < 0.20) return getTranslation(language, 'moonPhases.waxingCrescent');
+  if (phase < 0.30) return getTranslation(language, 'moonPhases.firstQuarter');
+  if (phase < 0.45) return getTranslation(language, 'moonPhases.waxingGibbous');
+  if (phase < 0.55) return getTranslation(language, 'moonPhases.fullMoon');
+  if (phase < 0.70) return getTranslation(language, 'moonPhases.waningGibbous');
+  if (phase < 0.80) return getTranslation(language, 'moonPhases.lastQuarter');
+  return getTranslation(language, 'moonPhases.waningCrescent');
 };

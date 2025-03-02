@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { format, addDays, differenceInDays } from 'date-fns';
+import { format, differenceInDays, addDays } from 'date-fns';
 import { Calendar, Sunrise, Sunset, Moon, Star } from 'lucide-react';
+import useLocalization from '../hooks/useLocalization';
 
 interface RamadanTrackerProps {
   className?: string;
@@ -9,6 +10,7 @@ interface RamadanTrackerProps {
 
 const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
   const { settings, prayerTimes } = useAppContext();
+  const { t, isRTL } = useLocalization();
   const [ramadanInfo, setRamadanInfo] = useState({
     isRamadan: false,
     startDate: new Date(),
@@ -18,56 +20,6 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
     totalDays: 30,
   });
   
-  const isRTL = settings.language === 'ar';
-  
-  const translations = {
-    ramadanTracker: {
-      en: 'Ramadan Tracker',
-      ru: 'Трекер Рамадана',
-      ar: 'متتبع رمضان'
-    },
-    dayOfRamadan: {
-      en: (day: number) => `Day ${day} of Ramadan`,
-      ru: (day: number) => `День ${day} Рамадана`,
-      ar: (day: number) => `اليوم ${day} من رمضان`
-    },
-    daysRemaining: {
-      en: (days: number) => `${days} days remaining`,
-      ru: (days: number) => `Осталось ${days} дней`,
-      ar: (days: number) => `متبقي ${days} أيام`
-    },
-    suhoorEnds: {
-      en: 'Suhoor ends',
-      ru: 'Конец сухура',
-      ar: 'نهاية السحور'
-    },
-    iftarBegins: {
-      en: 'Iftar begins',
-      ru: 'Начало ифтара',
-      ar: 'بداية الإفطار'
-    },
-    daysUntilRamadan: {
-      en: (days: number) => `${days} days until Ramadan`,
-      ru: (days: number) => `${days} дней до Рамадана`,
-      ar: (days: number) => `${days} يوم حتى رمضان`
-    },
-    beginsOn: {
-      en: (date: string) => `Begins on ${date}`,
-      ru: (date: string) => `Начинается ${date}`,
-      ar: (date: string) => `يبدأ في ${date}`
-    },
-    ramadanHasEnded: {
-      en: 'Ramadan has ended',
-      ru: 'Рамадан закончился',
-      ar: 'انتهى رمضان'
-    },
-    seeYouNextYear: {
-      en: 'See you next year, in sha Allah',
-      ru: 'Увидимся в следующем году, ин ша Аллах',
-      ar: 'نراكم العام المقبل، إن شاء الله'
-    }
-  };
-  
   useEffect(() => {
     // Ramadan 2025 is approximately from March 1 to March 30
     // This is an approximation - for accurate dates, we would need a proper Hijri calendar calculation
@@ -76,15 +28,22 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
     
     const today = new Date();
     
-    // For demonstration purposes, let's assume Ramadan has already started
-    // We'll set today's date to be a few days into Ramadan
-    const isRamadan = true;
+    // For demonstration purposes, we'll simulate that Ramadan is happening now
+    // In a real app, you would use proper Hijri calendar calculations
     
-    // Calculate which day of Ramadan it is (for demo purposes, let's say it's day 1)
-    const currentDay = 1;
+    // Create a simulated "today" date that falls within Ramadan period for demo purposes
+    // This simulates as if today is within the Ramadan period
+    const simulatedToday = new Date(2025, 2, today.getDate() > 30 ? 30 : today.getDate());
+    
+    // Check if we're in Ramadan period
+    const isRamadan = simulatedToday >= ramadanStart2025 && simulatedToday <= ramadanEnd2025;
+    
+    // Calculate which day of Ramadan it is
+    const daysSinceStart = isRamadan ? differenceInDays(simulatedToday, ramadanStart2025) + 1 : 0;
     
     // Calculate days left in Ramadan
-    const daysLeft = 29; // 30 days total - 1 day passed
+    const daysLeft = isRamadan ? differenceInDays(ramadanEnd2025, simulatedToday) : 
+                     (simulatedToday < ramadanStart2025 ? differenceInDays(ramadanStart2025, simulatedToday) : 0);
     
     const totalDays = 30;
     
@@ -92,8 +51,8 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
       isRamadan,
       startDate: ramadanStart2025,
       endDate: ramadanEnd2025,
-      currentDay,
-      daysLeft,
+      currentDay: daysSinceStart,
+      daysLeft: isRamadan ? daysLeft : daysLeft,
       totalDays,
     });
   }, []);
@@ -128,7 +87,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
               <Moon className="text-green-400" size={22} />
             </div>
             <h3 className="font-semibold text-green-400 text-lg">
-              {translations.ramadanTracker[settings.language]}
+              {t('ramadanTracker.ramadanTracker')}
             </h3>
           </div>
           <div className="flex space-x-1">
@@ -144,10 +103,10 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
             <>
               <div className="mb-5">
                 <p className="text-xl font-medium text-green-300">
-                  {translations.dayOfRamadan[settings.language](ramadanInfo.currentDay)}
+                  {t('ramadanTracker.dayOfRamadan', { day: ramadanInfo.currentDay })}
                 </p>
                 <p className="text-gray-400">
-                  {translations.daysRemaining[settings.language](ramadanInfo.daysLeft)}
+                  {t('ramadanTracker.daysRemaining', { days: ramadanInfo.daysLeft })}
                 </p>
               </div>
               
@@ -156,7 +115,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
                   <div className={`flex items-center mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <Sunrise className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={16} />
                     <p className="text-sm text-gray-400">
-                      {translations.suhoorEnds[settings.language]}
+                      {t('ramadanTracker.suhoorEnds')}
                     </p>
                   </div>
                   <p className="font-medium text-lg">{suhoorTime}</p>
@@ -166,7 +125,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
                   <div className={`flex items-center mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <Sunset className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={16} />
                     <p className="text-sm text-gray-400">
-                      {translations.iftarBegins[settings.language]}
+                      {t('ramadanTracker.iftarBegins')}
                     </p>
                   </div>
                   <p className="font-medium text-lg">{iftarTime}</p>
@@ -200,14 +159,14 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
                   </div>
                   
                   <p className="text-center text-lg font-medium mb-2">
-                    {translations.daysUntilRamadan[settings.language](ramadanInfo.daysLeft)}
+                    {t('ramadanTracker.daysUntilRamadan', { days: ramadanInfo.daysLeft })}
                   </p>
                   
                   <div className="bg-gray-800/40 rounded-lg p-3 mt-4">
                     <div className={`flex items-center justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <Calendar className={`text-green-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={16} />
                       <p className="text-gray-300 text-sm">
-                        {translations.beginsOn[settings.language](formatDate(ramadanInfo.startDate))}
+                        {t('ramadanTracker.beginsOn', { date: formatDate(ramadanInfo.startDate) })}
                       </p>
                     </div>
                   </div>
@@ -216,10 +175,10 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
                 <div className="text-center py-4">
                   <Moon className="mx-auto text-gray-400 mb-3" size={32} />
                   <p className="text-lg font-medium">
-                    {translations.ramadanHasEnded[settings.language]}
+                    {t('ramadanTracker.ramadanHasEnded')}
                   </p>
                   <p className="text-sm text-gray-400 mt-1">
-                    {translations.seeYouNextYear[settings.language]}
+                    {t('ramadanTracker.seeYouNextYear')}
                   </p>
                 </div>
               )}

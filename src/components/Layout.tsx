@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import Navigation from './Navigation';
 import { Settings } from 'lucide-react';
@@ -8,10 +9,12 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { setActiveTab, settings } = useAppContext();
+  const { settings } = useAppContext();
+  const navigate = useNavigate();
+  const location = useLocation();
   
   const openSettings = () => {
-    setActiveTab('settings');
+    navigate('/settings');
   };
   
   const isRTL = settings.language === 'ar';
@@ -24,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </h1>
         <button 
           onClick={openSettings}
-          className="p-2 rounded-full hover:bg-gray-700 transition-colors"
+          className={`p-2 rounded-full hover:bg-gray-700 transition-colors ${location.pathname === '/settings' ? 'bg-gray-700' : ''}`}
           aria-label="Open Settings"
         >
           <Settings size={20} />

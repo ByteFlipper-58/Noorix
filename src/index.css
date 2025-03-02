@@ -10,7 +10,3 @@ html[lang="ar"] {
 html[lang="en"], html[lang="ru"] {
   font-family: 'Roboto', sans-serif;
 }
-
-:root {
-  color-scheme: dark light;
-}

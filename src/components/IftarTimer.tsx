@@ -1,40 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { Clock, Utensils, Sunrise } from 'lucide-react';
+import { Clock, Utensils } from 'lucide-react';
+import useLocalization from '../hooks/useLocalization';
 
 interface IftarTimerProps {
   className?: string;
 }
 
 const IftarTimer: React.FC<IftarTimerProps> = ({ className = '' }) => {
-  const { prayerTimes, settings } = useAppContext();
+  const { prayerTimes } = useAppContext();
+  const { t, isRTL } = useLocalization();
   const [countdown, setCountdown] = useState<string>('');
   const [isIftarTime, setIsIftarTime] = useState<boolean>(false);
-  
-  const isRTL = settings.language === 'ar';
-  
-  const translations = {
-    iftarTime: {
-      en: 'Iftar Time',
-      ru: 'Время Ифтара',
-      ar: 'وقت الإفطار'
-    },
-    timeUntilIftar: {
-      en: 'Time Until Iftar',
-      ru: 'Время до Ифтара',
-      ar: 'الوقت حتى الإفطار'
-    },
-    timeUntilSuhoorEnds: {
-      en: 'Time until Suhoor ends:',
-      ru: 'Время до окончания Сухура:',
-      ar: 'الوقت حتى نهاية السحور:'
-    },
-    timeUntilBreakingFast: {
-      en: 'Time until breaking fast:',
-      ru: 'Время до разговения:',
-      ar: 'الوقت حتى الإفطار:'
-    }
-  };
   
   useEffect(() => {
     if (!prayerTimes || !prayerTimes.timings) return;
@@ -125,15 +102,15 @@ const IftarTimer: React.FC<IftarTimerProps> = ({ className = '' }) => {
     <div className={`bg-amber-900/20 border border-amber-800 rounded-lg p-4 ${className}`}>
       <h3 className="text-lg font-medium text-amber-400 mb-1">
         {isIftarTime 
-          ? translations.iftarTime[settings.language]
-          : translations.timeUntilIftar[settings.language]}
+          ? t('iftarTimer.iftarTime')
+          : t('iftarTimer.timeUntilIftar')}
       </h3>
       <div className="flex justify-between items-center">
         <div>
           <p className="text-sm text-amber-300">
             {isIftarTime 
-              ? translations.timeUntilSuhoorEnds[settings.language]
-              : translations.timeUntilBreakingFast[settings.language]}
+              ? t('iftarTimer.timeUntilSuhoorEnds')
+              : t('iftarTimer.timeUntilBreakingFast')}
           </p>
           <p className="text-2xl font-bold text-amber-300">{countdown}</p>
         </div>
