@@ -99,8 +99,8 @@ const IftarTimer: React.FC<IftarTimerProps> = ({ className = '' }) => {
   }
   
   return (
-    <div className={`bg-amber-900/20 border border-amber-800 rounded-lg p-4 ${className}`}>
-      <h3 className="text-lg font-medium text-amber-400 mb-1">
+    <div className={`bg-amber-900/20 border border-amber-800 rounded-xl p-5 ${className}`}>
+      <h3 className="text-lg font-medium text-amber-400 mb-2">
         {isIftarTime 
           ? t('iftarTimer.iftarTime')
           : t('iftarTimer.timeUntilIftar')}
@@ -114,9 +114,9 @@ const IftarTimer: React.FC<IftarTimerProps> = ({ className = '' }) => {
           </p>
           <p className="text-2xl font-bold text-amber-300">{countdown}</p>
         </div>
-        <div className="bg-gray-800 p-3 rounded-lg shadow-sm">
+        <div className="bg-gray-800 p-4 rounded-xl shadow-sm">
           <div className="text-amber-400">
-            {isIftarTime ? <Utensils size={24} /> : <Clock size={24} />}
+            {isIftarTime ? <Utensils size={26} /> : <Clock size={26} />}
           </div>
         </div>
       </div>

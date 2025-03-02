@@ -3,7 +3,7 @@ import translations from '../localization';
 
 /**
  * Detects the user's preferred language based on browser settings
- * Supports English, Russian, and Arabic
+ * Supports English, Russian, Arabic, Turkish, and Tatar
  * @returns The detected language code or 'en' as default
  */
 export const detectUserLanguage = (): Language => {
@@ -19,6 +19,16 @@ export const detectUserLanguage = (): Language => {
   if (browserLang.startsWith('ar') || 
       browserLang.startsWith('ar-')) {
     return 'ar';
+  }
+  
+  // Check for Turkish
+  if (browserLang.startsWith('tr')) {
+    return 'tr';
+  }
+  
+  // Check for Tatar
+  if (browserLang.startsWith('tt')) {
+    return 'tt';
   }
   
   // Default to English for all other languages

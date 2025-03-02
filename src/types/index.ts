@@ -107,7 +107,7 @@ export interface UserSettings {
   calculationMethod: CalculationMethod;
   madhab: MadhabType;
   timeFormat: '12h' | '24h';
-  language: 'en' | 'ru' | 'ar';
+  language: Language;
   notifications: boolean;
 }
 
@@ -117,4 +117,4 @@ export type NextPrayer = {
   countdown: string;
 };
 
-export type Language = 'en' | 'ru' | 'ar';
+export type Language = 'en' | 'ru' | 'ar' | 'tr' | 'tt';

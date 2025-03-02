@@ -85,10 +85,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       );
       setPrayerTimes(data);
     } catch (err) {
-      const errorMessage = {
+      const errorMessage: Record<Language, string> = {
         'en': 'Failed to fetch prayer times. Please try again later.',
         'ru': 'Не удалось получить время молитв. Пожалуйста, попробуйте позже.',
-        'ar': 'فشل في جلب أوقات الصلاة. يرجى المحاولة مرة أخرى لاحقًا.'
+        'ar': 'فشل في جلب أوقات الصلاة. يرجى المحاولة مرة أخرى لاحقًا.',
+        'tr': 'Namaz vakitleri alınamadı. Lütfen daha sonra tekrar deneyin.',
+        'tt': 'Намаз вакытларын алып булмады. Зинһар, соңрак яңадан карагыз.'
       };
       setError(errorMessage[settings.language]);
       console.error(err);

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { getMoonPhaseEmoji, getMoonPhaseName } from '../data/cities';
 import { Moon } from 'lucide-react';
+import useLocalization from '../hooks/useLocalization';
 
 const MoonPhase: React.FC = () => {
   const { settings } = useAppContext();
+  const { t } = useLocalization();
   const [moonPhase, setMoonPhase] = useState<number>(0);
   
   useEffect(() => {
@@ -33,13 +35,13 @@ const MoonPhase: React.FC = () => {
   const phaseName = getMoonPhaseName(moonPhase, settings.language);
   
   return (
-    <div className="bg-gray-800/50 rounded-lg p-4 mb-6 flex items-center">
-      <div className="text-4xl mr-3">{moonEmoji}</div>
+    <div className="bg-gray-800/50 rounded-xl p-5 mb-6 flex items-center">
+      <div className="text-4xl mr-4">{moonEmoji}</div>
       <div>
-        <h3 className="font-medium text-gray-300">
-          {settings.language === 'en' ? 'Current Moon Phase' : 'Текущая фаза Луны'}
+        <h3 className="font-medium text-lg text-gray-300">
+          {t('prayerTimes.currentMoonPhase')}
         </h3>
-        <p className="text-gray-400">{phaseName}</p>
+        <p className="text-gray-400 text-lg">{phaseName}</p>
       </div>
     </div>
   );

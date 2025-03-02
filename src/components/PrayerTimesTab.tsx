@@ -7,15 +7,15 @@ import { NextPrayer } from '../types';
 import { getMoonPhaseEmoji, getMoonPhaseName } from '../data/cities';
 import IftarTimer from './IftarTimer';
 import { getPrayerNameTranslation } from '../services/languageService';
+import useLocalization from '../hooks/useLocalization';
 
 const PrayerTimesTab: React.FC = () => {
   const { prayerTimes, loading, error, settings, location } = useAppContext();
+  const { t, isRTL } = useLocalization();
   const navigate = useNavigate();
   const [nextPrayer, setNextPrayer] = useState<NextPrayer | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [moonPhase, setMoonPhase] = useState<number>(0);
-  
-  const isRTL = settings.language === 'ar';
   
   useEffect(() => {
     // Update current time every minute
@@ -63,49 +63,6 @@ const PrayerTimesTab: React.FC = () => {
     }
   }, [prayerTimes, currentTime, settings.notifications]);
   
-  const translations = {
-    noLocationSelected: {
-      en: 'No Location Selected',
-      ru: 'Местоположение не выбрано',
-      ar: 'لم يتم تحديد الموقع'
-    },
-    pleaseSetLocation: {
-      en: 'Please set your location to see prayer times',
-      ru: 'Пожалуйста, укажите ваше местоположение, чтобы увидеть время молитв',
-      ar: 'يرجى تحديد موقعك لرؤية أوقات الصلاة'
-    },
-    goToLocationSettings: {
-      en: 'Go to Location Settings',
-      ru: 'Перейти к настройкам местоположения',
-      ar: 'الذهاب إلى إعدادات الموقع'
-    },
-    nextPrayer: {
-      en: 'Next Prayer',
-      ru: 'Следующая молитва',
-      ar: 'الصلاة القادمة'
-    },
-    currentLocation: {
-      en: 'Current Location',
-      ru: 'Текущее местоположение',
-      ar: 'الموقع الحالي'
-    },
-    currentMoonPhase: {
-      en: 'Current Moon Phase',
-      ru: 'Текущая фаза Луны',
-      ar: 'طور القمر الحالي'
-    },
-    rakats: {
-      en: 'rakats',
-      ru: 'раката',
-      ar: 'ركعات'
-    },
-    iftar: {
-      en: 'Iftar',
-      ru: 'Ифтар',
-      ar: 'إفطار'
-    }
-  };
-  
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -130,17 +87,17 @@ const PrayerTimesTab: React.FC = () => {
       <div className="text-center py-10">
         <MapPin className="mx-auto mb-4 text-gray-400" size={48} />
         <h2 className="text-xl font-semibold mb-2">
-          {translations.noLocationSelected[settings.language]}
+          {t('prayerTimes.noLocationSelected')}
         </h2>
         <p className="text-gray-400 mb-6">
-          {translations.pleaseSetLocation[settings.language]}
+          {t('prayerTimes.pleaseSetLocation')}
         </p>
         <button 
           onClick={() => navigate('/location')}
           className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors flex items-center mx-auto"
         >
           <MapPin size={18} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />
-          {translations.goToLocationSettings[settings.language]}
+          {t('prayerTimes.goToLocationSettings')}
           <MoveRight size={18} className={`${isRTL ? 'mr-2' : 'ml-2'}`} />
         </button>
       </div>
@@ -185,39 +142,43 @@ const PrayerTimesTab: React.FC = () => {
   };
   
   return (
-    <div className={`${isRTL ? 'text-right' : ''}`}>
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-1">{formattedDate}</h2>
+    <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-1">{formattedDate}</h2>
         {formattedHijriDate && <p className="text-gray-400">{formattedHijriDate}</p>}
         <p className="text-sm mt-1">
-          {location.city ? `${location.city}, ${location.country}` : translations.currentLocation[settings.language]}
+          {location.city ? `${location.city}, ${location.country}` : t('prayerTimes.currentLocation')}
         </p>
       </div>
       
-      {nextPrayer && nextPrayer.name !== 'Unknown' && (
-        <div className="bg-green-900/20 border border-green-800 rounded-lg p-4 mb-6">
-          <h3 className="text-lg font-medium text-green-400 mb-1">
-            {translations.nextPrayer[settings.language]}
-          </h3>
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-2xl font-bold text-green-300">{getPrayerNameTranslation(nextPrayer.name, settings.language)}</p>
-              <p className="text-green-400">{formatPrayerTime(nextPrayer.time)}</p>
-            </div>
-            <div className="bg-gray-800 px-3 py-2 rounded-lg shadow-sm">
-              <div className="flex items-center text-green-400">
-                <Clock size={16} className={`${isRTL ? 'ml-1' : 'mr-1'}`} />
-                <span className="font-medium">{nextPrayer.countdown}</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {nextPrayer && nextPrayer.name !== 'Unknown' && (
+          <div className="bg-green-900/20 border border-green-800 rounded-xl p-5 h-full">
+            <h3 className="text-lg font-medium text-green-400 mb-2">
+              {t('prayerTimes.nextPrayer')}
+            </h3>
+            <div className="flex flex-col">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-2xl font-bold text-green-300">{getPrayerNameTranslation(nextPrayer.name, settings.language)}</p>
+                  <p className="text-green-400">{formatPrayerTime(nextPrayer.time)}</p>
+                </div>
+                <div className="bg-gray-800 px-3 py-2 rounded-lg shadow-sm">
+                  <div className="flex items-center text-green-400">
+                    <Clock size={16} className={`${isRTL ? 'ml-1' : 'mr-1'}`} />
+                    <span className="font-medium">{nextPrayer.countdown}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+        
+        {/* Iftar Timer */}
+        <IftarTimer className="h-full" />
+      </div>
       
-      {/* Iftar Timer */}
-      <IftarTimer className="mb-6" />
-      
-      <div className="bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
+      <div className="bg-gray-800 rounded-xl shadow-sm overflow-hidden mb-8">
         <div className="divide-y divide-gray-700">
           {prayerTimes.timings && (
             <>
@@ -227,7 +188,7 @@ const PrayerTimesTab: React.FC = () => {
                 isNext={nextPrayer?.name === 'Fajr'} 
                 isRTL={isRTL}
                 rakats={prayerRakats.Fajr}
-                rakatLabel={translations.rakats[settings.language]}
+                rakatLabel={t('prayerTimes.rakats')}
               />
               <PrayerTimeRow 
                 name={getPrayerNameTranslation('Sunrise', settings.language)} 
@@ -241,7 +202,7 @@ const PrayerTimesTab: React.FC = () => {
                 isNext={nextPrayer?.name === 'Dhuhr'} 
                 isRTL={isRTL}
                 rakats={prayerRakats.Dhuhr}
-                rakatLabel={translations.rakats[settings.language]}
+                rakatLabel={t('prayerTimes.rakats')}
               />
               <PrayerTimeRow 
                 name={getPrayerNameTranslation('Asr', settings.language)} 
@@ -249,17 +210,17 @@ const PrayerTimesTab: React.FC = () => {
                 isNext={nextPrayer?.name === 'Asr'} 
                 isRTL={isRTL}
                 rakats={prayerRakats.Asr}
-                rakatLabel={translations.rakats[settings.language]}
+                rakatLabel={t('prayerTimes.rakats')}
               />
               <PrayerTimeRow 
                 name={getPrayerNameTranslation('Maghrib', settings.language)} 
                 time={formatPrayerTime(prayerTimes.timings.Maghrib)} 
                 isNext={nextPrayer?.name === 'Maghrib'} 
                 isIftar 
-                iftarLabel={translations.iftar[settings.language]} 
+                iftarLabel={t('prayerTimes.iftar')} 
                 isRTL={isRTL}
                 rakats={prayerRakats.Maghrib}
-                rakatLabel={translations.rakats[settings.language]}
+                rakatLabel={t('prayerTimes.rakats')}
               />
               <PrayerTimeRow 
                 name={getPrayerNameTranslation('Isha', settings.language)} 
@@ -267,7 +228,7 @@ const PrayerTimesTab: React.FC = () => {
                 isNext={nextPrayer?.name === 'Isha'} 
                 isRTL={isRTL}
                 rakats={prayerRakats.Isha}
-                rakatLabel={translations.rakats[settings.language]}
+                rakatLabel={t('prayerTimes.rakats')}
               />
             </>
           )}
@@ -275,11 +236,11 @@ const PrayerTimesTab: React.FC = () => {
       </div>
       
       {/* Moon Phase */}
-      <div className="bg-gray-800/50 rounded-lg p-4 flex items-center">
+      <div className="bg-gray-800/50 rounded-xl p-5 flex items-center">
         <div className="text-4xl mr-3">{moonEmoji}</div>
         <div>
           <h3 className="font-medium text-gray-300">
-            {translations.currentMoonPhase[settings.language]}
+            {t('prayerTimes.currentMoonPhase')}
           </h3>
           <p className="text-gray-400">{phaseName}</p>
         </div>
@@ -313,7 +274,7 @@ const PrayerTimeRow: React.FC<PrayerTimeRowProps> = ({
 }) => {
   return (
     <div className={`
-      flex items-center p-4
+      flex items-center p-5
       ${isNext ? 'bg-green-900/20' : ''}
       ${isInfo ? 'bg-gray-700/30 text-gray-400' : ''}
     `}>

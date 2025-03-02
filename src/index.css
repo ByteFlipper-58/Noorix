@@ -2,11 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add Arabic font support */
+/* Add font support for different languages */
 html[lang="ar"] {
   font-family: 'Amiri', serif;
 }
 
-html[lang="en"], html[lang="ru"] {
+html[lang="en"], html[lang="ru"], html[lang="tr"] {
   font-family: 'Roboto', sans-serif;
+}
+
+html[lang="tt"] {
+  font-family: 'Roboto', 'Amiri', sans-serif;
 }

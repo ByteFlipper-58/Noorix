@@ -34,18 +34,22 @@ const Navigation: React.FC<NavigationProps> = ({ orientation }) => {
   const isHorizontal = orientation === 'horizontal';
   
   return (
-    <nav className={`${isHorizontal ? 'flex justify-around' : 'flex flex-col py-4'}`}>
+    <nav className={`${isHorizontal ? 'flex justify-around' : 'flex flex-col'}`}>
       {tabs.map(tab => (
         <NavLink
           key={tab.id}
           to={tab.path}
           className={({ isActive }) => `
-            ${isHorizontal ? 'py-3 flex-1' : 'py-3 px-4 mb-2'}
+            ${isHorizontal ? 'py-3 flex-1' : 'py-4 px-6 mb-2 rounded-xl transition-all'}
             flex ${isHorizontal ? 'flex-col' : ''} items-center 
             ${!isHorizontal && (isRTL ? 'justify-end' : 'justify-start')} 
             ${isActive 
-              ? 'text-green-600 dark:text-green-400 font-medium' 
-              : 'text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400'
+              ? isHorizontal 
+                ? 'text-green-500 dark:text-green-400 font-medium' 
+                : 'text-green-500 dark:text-green-400 font-medium bg-green-900/20 border-l-4 border-green-500'
+              : isHorizontal
+                ? 'text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400'
+                : 'text-gray-400 hover:text-green-400 hover:bg-gray-700/30'
             }
             transition-colors
           `}
@@ -53,7 +57,7 @@ const Navigation: React.FC<NavigationProps> = ({ orientation }) => {
           <span className={`
             ${isHorizontal ? '' : (isRTL ? 'mr-3' : 'mr-3')}
           `}>{tab.icon}</span>
-          <span className={`${isHorizontal ? 'text-xs mt-1' : 'text-sm'}`}>{tab.label}</span>
+          <span className={`${isHorizontal ? 'text-xs mt-1' : 'text-sm font-medium'}`}>{tab.label}</span>
         </NavLink>
       ))}
     </nav>

@@ -74,35 +74,35 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
   };
   
   return (
-    <div className={`bg-gradient-to-br from-green-900/40 to-gray-800 rounded-lg overflow-hidden shadow-lg ${className}`}>
+    <div className={`bg-gradient-to-br from-green-900/40 to-gray-800 rounded-xl overflow-hidden shadow-lg ${className}`}>
       <div className="relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full -mr-12 -mt-12"></div>
         <div className="absolute bottom-0 left-0 w-16 h-16 bg-green-500/10 rounded-full -ml-8 -mb-8"></div>
         
         {/* Header */}
-        <div className="relative p-5 flex items-center justify-between">
+        <div className="relative p-6 flex items-center justify-between">
           <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <div className={`bg-green-500/20 p-2 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
-              <Moon className="text-green-400" size={22} />
+            <div className={`bg-green-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
+              <Moon className="text-green-400" size={24} />
             </div>
-            <h3 className="font-semibold text-green-400 text-lg">
+            <h3 className="font-semibold text-green-400 text-xl">
               {t('ramadanTracker.ramadanTracker')}
             </h3>
           </div>
           <div className="flex space-x-1">
             {[...Array(3)].map((_, i) => (
-              <Star key={i} className="text-amber-400/70" size={12} fill="#f59e0b" />
+              <Star key={i} className="text-amber-400/70" size={14} fill="#f59e0b" />
             ))}
           </div>
         </div>
         
         {/* Content */}
-        <div className="p-5 pt-2">
+        <div className="p-6 pt-2">
           {ramadanInfo.isRamadan ? (
             <>
-              <div className="mb-5">
-                <p className="text-xl font-medium text-green-300">
+              <div className="mb-6">
+                <p className="text-2xl font-medium text-green-300">
                   {t('ramadanTracker.dayOfRamadan', { day: ramadanInfo.currentDay })}
                 </p>
                 <p className="text-gray-400">
@@ -110,10 +110,10 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
                 </p>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 mb-5">
-                <div className="bg-gray-800/50 rounded-lg p-3">
-                  <div className={`flex items-center mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <Sunrise className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={16} />
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-800/50 rounded-lg p-4">
+                  <div className={`flex items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <Sunrise className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
                     <p className="text-sm text-gray-400">
                       {t('ramadanTracker.suhoorEnds')}
                     </p>
@@ -121,9 +121,9 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
                   <p className="font-medium text-lg">{suhoorTime}</p>
                 </div>
                 
-                <div className="bg-gray-800/50 rounded-lg p-3">
-                  <div className={`flex items-center mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <Sunset className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={16} />
+                <div className="bg-gray-800/50 rounded-lg p-4">
+                  <div className={`flex items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <Sunset className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
                     <p className="text-sm text-gray-400">
                       {t('ramadanTracker.iftarBegins')}
                     </p>
@@ -133,9 +133,9 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
               </div>
               
               {/* Progress bar */}
-              <div className="w-full bg-gray-700/50 rounded-full h-2.5 mb-2">
+              <div className="w-full bg-gray-700/50 rounded-full h-3 mb-2">
                 <div 
-                  className="bg-gradient-to-r from-green-500 to-green-400 h-2.5 rounded-full" 
+                  className="bg-gradient-to-r from-green-500 to-green-400 h-3 rounded-full" 
                   style={{ width: `${(ramadanInfo.currentDay / ramadanInfo.totalDays) * 100}%` }}
                 ></div>
               </div>
@@ -144,27 +144,27 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
               </p>
             </>
           ) : (
-            <div className="py-3">
+            <div className="py-4">
               {ramadanInfo.daysLeft > 0 ? (
                 <>
-                  <div className="flex justify-center mb-4">
+                  <div className="flex justify-center mb-5">
                     <div className="relative">
-                      <div className="w-20 h-20 rounded-full bg-green-900/30 flex items-center justify-center">
-                        <Calendar className="text-green-400" size={28} />
+                      <div className="w-24 h-24 rounded-full bg-green-900/30 flex items-center justify-center">
+                        <Calendar className="text-green-400" size={32} />
                       </div>
-                      <div className="absolute -top-2 -right-2 bg-amber-500/90 text-white text-xs font-bold rounded-full w-8 h-8 flex items-center justify-center">
+                      <div className="absolute -top-2 -right-2 bg-amber-500/90 text-white text-sm font-bold rounded-full w-10 h-10 flex items-center justify-center">
                         {ramadanInfo.daysLeft}
                       </div>
                     </div>
                   </div>
                   
-                  <p className="text-center text-lg font-medium mb-2">
+                  <p className="text-center text-xl font-medium mb-3">
                     {t('ramadanTracker.daysUntilRamadan', { days: ramadanInfo.daysLeft })}
                   </p>
                   
-                  <div className="bg-gray-800/40 rounded-lg p-3 mt-4">
+                  <div className="bg-gray-800/40 rounded-lg p-4 mt-4">
                     <div className={`flex items-center justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-                      <Calendar className={`text-green-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={16} />
+                      <Calendar className={`text-green-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
                       <p className="text-gray-300 text-sm">
                         {t('ramadanTracker.beginsOn', { date: formatDate(ramadanInfo.startDate) })}
                       </p>
@@ -172,12 +172,12 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
                   </div>
                 </>
               ) : (
-                <div className="text-center py-4">
-                  <Moon className="mx-auto text-gray-400 mb-3" size={32} />
-                  <p className="text-lg font-medium">
+                <div className="text-center py-5">
+                  <Moon className="mx-auto text-gray-400 mb-4" size={36} />
+                  <p className="text-xl font-medium">
                     {t('ramadanTracker.ramadanHasEnded')}
                   </p>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <p className="text-sm text-gray-400 mt-2">
                     {t('ramadanTracker.seeYouNextYear')}
                   </p>
                 </div>

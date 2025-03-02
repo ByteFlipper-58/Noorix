@@ -3,79 +3,21 @@ import { useAppContext } from '../context/AppContext';
 import { popularCities } from '../data/cities';
 import { MapPin, Navigation, Search } from 'lucide-react';
 import { Location, City } from '../types';
+import useLocalization from '../hooks/useLocalization';
 
 const LocationTab: React.FC = () => {
   const { location, setLocation, settings } = useAppContext();
+  const { t, isRTL } = useLocalization();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  const isRTL = settings.language === 'ar';
-  
-  const translations = {
-    locationSettings: {
-      en: 'Location Settings',
-      ru: 'Настройки местоположения',
-      ar: 'إعدادات الموقع'
-    },
-    detectMyLocation: {
-      en: 'Detect My Location',
-      ru: 'Определить моё местоположение',
-      ar: 'تحديد موقعي'
-    },
-    currentLocation: {
-      en: 'Current Location',
-      ru: 'Текущее местоположение',
-      ar: 'الموقع الحالي'
-    },
-    latitude: {
-      en: 'Latitude',
-      ru: 'Широта',
-      ar: 'خط العرض'
-    },
-    longitude: {
-      en: 'Longitude',
-      ru: 'Долгота',
-      ar: 'خط الطول'
-    },
-    orSelectCity: {
-      en: 'Or Select a City',
-      ru: 'Или выберите город',
-      ar: 'أو اختر مدينة'
-    },
-    searchCities: {
-      en: 'Search cities...',
-      ru: 'Поиск городов...',
-      ar: 'البحث عن المدن...'
-    },
-    notFoundInCityList: {
-      en: (query: string) => `"${query}" not found in our city list. Please use "Detect My Location" instead.`,
-      ru: (query: string) => `"${query}" не найден в нашем списке городов. Пожалуйста, используйте "Определить моё местоположение".`,
-      ar: (query: string) => `"${query}" غير موجود في قائمة المدن لدينا. يرجى استخدام "تحديد موقعي" بدلاً من ذلك.`
-    },
-    geolocationNotSupported: {
-      en: 'Geolocation is not supported by your browser',
-      ru: 'Геолокация не поддерживается вашим браузером',
-      ar: 'تحديد الموقع الجغرافي غير مدعوم من متصفحك'
-    },
-    errorGettingLocation: {
-      en: (message: string) => `Error getting location: ${message}`,
-      ru: (message: string) => `Ошибка получения местоположения: ${message}`,
-      ar: (message: string) => `خطأ في الحصول على الموقع: ${message}`
-    },
-    unknown: {
-      en: 'Unknown',
-      ru: 'Неизвестно',
-      ar: 'غير معروف'
-    }
-  };
   
   const detectLocation = () => {
     setLoading(true);
     setError(null);
     
     if (!navigator.geolocation) {
-      setError(translations.geolocationNotSupported[settings.language]);
+      setError(t('location.geolocationNotSupported'));
       setLoading(false);
       return;
     }
@@ -93,9 +35,9 @@ const LocationTab: React.FC = () => {
           .then(data => {
             if (data.address) {
               newLocation.city = data.address.city || data.address.town || data.address.village || 
-                translations.unknown[settings.language];
+                t('common.unknown');
               newLocation.country = data.address.country || 
-                translations.unknown[settings.language];
+                t('common.unknown');
             }
             setLocation(newLocation);
             setLoading(false);
@@ -107,7 +49,7 @@ const LocationTab: React.FC = () => {
           });
       },
       (error) => {
-        setError(translations.errorGettingLocation[settings.language](error.message));
+        setError(t('location.errorGettingLocation', { message: error.message }));
         setLoading(false);
       }
     );
@@ -130,43 +72,43 @@ const LocationTab: React.FC = () => {
   const showNotFoundMessage = searchQuery.length > 0 && filteredCities.length === 0;
   
   return (
-    <div className={`${isRTL ? 'text-right' : ''}`}>
-      <h2 className="text-xl font-semibold mb-4">
-        {translations.locationSettings[settings.language]}
+    <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
+      <h2 className="text-2xl font-semibold mb-6">
+        {t('location.locationSettings')}
       </h2>
       
-      <div className="mb-6">
+      <div className="mb-8">
         <button
           onClick={detectLocation}
           disabled={loading}
-          className="w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
-            <span className="animate-spin mr-2 h-4 w-4 border-t-2 border-b-2 border-white rounded-full"></span>
+            <span className="animate-spin mr-2 h-5 w-5 border-t-2 border-b-2 border-white rounded-full"></span>
           ) : (
-            <Navigation className={`${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
+            <Navigation className={`${isRTL ? 'ml-2' : 'mr-2'}`} size={20} />
           )}
-          {translations.detectMyLocation[settings.language]}
+          {t('location.detectMyLocation')}
         </button>
         
         {error && (
-          <p className="mt-2 text-red-400 text-sm">{error}</p>
+          <p className="mt-3 text-red-400 text-sm">{error}</p>
         )}
         
         {location && (
-          <div className="mt-4 p-4 bg-gray-800 rounded-lg shadow-sm">
-            <h3 className="font-medium mb-2">
-              {translations.currentLocation[settings.language]}
+          <div className="mt-5 p-5 bg-gray-800 rounded-xl shadow-sm">
+            <h3 className="font-medium mb-3 text-lg">
+              {t('location.currentLocation')}
             </h3>
             <div className="flex items-start">
-              <MapPin className={`text-green-400 mt-0.5 ${isRTL ? 'ml-2' : 'mr-2'} flex-shrink-0`} size={18} />
+              <MapPin className={`text-green-400 mt-0.5 ${isRTL ? 'ml-2' : 'mr-2'} flex-shrink-0`} size={20} />
               <div>
                 {location.city ? (
-                  <p>{location.city}, {location.country}</p>
+                  <p className="text-lg">{location.city}, {location.country}</p>
                 ) : (
                   <p>
-                    {translations.latitude[settings.language]}: {location.latitude.toFixed(4)}, 
-                    {translations.longitude[settings.language]}: {location.longitude.toFixed(4)}
+                    {t('location.latitude')}: {location.latitude.toFixed(4)}, 
+                    {t('location.longitude')}: {location.longitude.toFixed(4)}
                   </p>
                 )}
               </div>
@@ -175,45 +117,45 @@ const LocationTab: React.FC = () => {
         )}
       </div>
       
-      <div className="mb-4">
-        <h3 className="font-medium mb-3">
-          {translations.orSelectCity[settings.language]}
+      <div className="mb-6">
+        <h3 className="font-medium mb-4 text-xl">
+          {t('location.orSelectCity')}
         </h3>
-        <div className="relative">
+        <div className="relative mb-5">
           <input
             type="text"
-            placeholder={translations.searchCities[settings.language]}
+            placeholder={t('location.searchCities')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full ${isRTL ? 'pr-10 pl-4' : 'pl-10 pr-4'} py-2 border dark:border-gray-700 rounded-lg bg-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500`}
+            className={`w-full ${isRTL ? 'pr-12 pl-4' : 'pl-12 pr-4'} py-3 border dark:border-gray-700 rounded-xl bg-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 text-lg`}
           />
-          <Search className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-2.5 text-gray-400`} size={18} />
+          <Search className={`absolute ${isRTL ? 'right-4' : 'left-4'} top-3.5 text-gray-400`} size={20} />
         </div>
       </div>
       
       {showNotFoundMessage && (
-        <div className="mb-4 p-4 bg-amber-900/20 border border-amber-800 rounded-lg text-amber-300">
+        <div className="mb-6 p-5 bg-amber-900/20 border border-amber-800 rounded-xl text-amber-300">
           <p className="flex items-center">
-            <MapPin className={`${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
-            {translations.notFoundInCityList[settings.language](searchQuery)}
+            <MapPin className={`${isRTL ? 'ml-2' : 'mr-2'}`} size={20} />
+            {t('location.notFoundInCityList', { query: searchQuery })}
           </p>
         </div>
       )}
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-96 overflow-y-auto pr-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[600px] overflow-y-auto pr-1">
         {filteredCities.map(city => (
           <button
             key={city.id}
             onClick={() => selectCity(city)}
             className={`
-              text-left p-3 rounded-lg transition-colors
+              text-left p-4 rounded-xl transition-colors
               ${location?.city === city.name 
                 ? 'bg-green-900/20 dark:border-green-800 border' 
                 : 'bg-gray-800 hover:bg-gray-700 border border-gray-700'}
               ${isRTL ? 'text-right' : ''}
             `}
           >
-            <p className="font-medium">{city.name}</p>
+            <p className="font-medium text-lg">{city.name}</p>
             <p className="text-sm text-gray-400">{city.country}</p>
           </button>
         ))}

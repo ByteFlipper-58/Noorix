@@ -1,6 +1,8 @@
 import enTranslations from './en.json';
 import ruTranslations from './ru.json';
 import arTranslations from './ar.json';
+import trTranslations from './tr.json';
+import ttTranslations from './tt.json';
 import { Language } from '../types';
 
 // Define the structure of our translations
@@ -10,7 +12,9 @@ export type TranslationKeys = typeof enTranslations;
 const translations: Record<Language, TranslationKeys> = {
   en: enTranslations,
   ru: ruTranslations,
-  ar: arTranslations
+  ar: arTranslations,
+  tr: trTranslations,
+  tt: ttTranslations
 };
 
 /**
