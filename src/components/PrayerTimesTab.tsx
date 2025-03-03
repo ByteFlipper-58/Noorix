@@ -143,7 +143,7 @@ const PrayerTimesTab: React.FC = () => {
   
   return (
     <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
-      <div className="mb-8">
+      <div className="mb-6">
         <h2 className="text-2xl font-semibold mb-1">{formattedDate}</h2>
         {formattedHijriDate && <p className="text-gray-400">{formattedHijriDate}</p>}
         <p className="text-sm mt-1">
@@ -151,9 +151,9 @@ const PrayerTimesTab: React.FC = () => {
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {nextPrayer && nextPrayer.name !== 'Unknown' && (
-          <div className="bg-green-900/20 border border-green-800 rounded-xl p-5 h-full">
+          <div className="bg-green-900/20 border border-green-800 rounded-xl p-4 h-full">
             <h3 className="text-lg font-medium text-green-400 mb-2">
               {t('prayerTimes.nextPrayer')}
             </h3>
@@ -178,7 +178,7 @@ const PrayerTimesTab: React.FC = () => {
         <IftarTimer className="h-full" />
       </div>
       
-      <div className="bg-gray-800 rounded-xl shadow-sm overflow-hidden mb-8">
+      <div className="bg-gray-800 rounded-xl shadow-sm overflow-hidden mb-6">
         <div className="divide-y divide-gray-700">
           {prayerTimes.timings && (
             <>
@@ -236,7 +236,7 @@ const PrayerTimesTab: React.FC = () => {
       </div>
       
       {/* Moon Phase */}
-      <div className="bg-gray-800/50 rounded-xl p-5 flex items-center">
+      <div className="bg-gray-800/50 rounded-xl p-4 flex items-center">
         <div className="text-4xl mr-3">{moonEmoji}</div>
         <div>
           <h3 className="font-medium text-gray-300">
@@ -274,7 +274,7 @@ const PrayerTimeRow: React.FC<PrayerTimeRowProps> = ({
 }) => {
   return (
     <div className={`
-      flex items-center p-5
+      flex items-center p-4
       ${isNext ? 'bg-green-900/20' : ''}
       ${isInfo ? 'bg-gray-700/30 text-gray-400' : ''}
     `}>

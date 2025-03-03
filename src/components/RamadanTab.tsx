@@ -9,16 +9,16 @@ const RamadanTab: React.FC = () => {
   
   return (
     <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
-      <h2 className="text-2xl font-semibold mb-6">
+      <h2 className="text-2xl font-semibold mb-4">
         {t('ramadan.ramadan2025')}
       </h2>
       
       {/* Ramadan Tracker */}
-      <RamadanTracker className="mb-8" />
+      <RamadanTracker className="mb-6" />
       
       {/* Additional Ramadan content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-gray-800 rounded-xl p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="bg-gray-800 rounded-xl p-4 md:p-6">
           <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <div className={`bg-green-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
               <Calendar className="text-green-400" size={22} />
@@ -28,42 +28,42 @@ const RamadanTab: React.FC = () => {
             </h3>
           </div>
           <ul className="space-y-3">
-            <li className="flex justify-between">
+            <li className="flex justify-between items-center">
               <span className="text-gray-300">
                 {t('ramadan.firstDayRamadan')}
               </span>
-              <span className="text-gray-400">
+              <span className="text-gray-400 ml-2 text-right">
                 {isRTL ? '١ مارس ٢٠٢٥' : 'March 1, 2025'}
               </span>
             </li>
-            <li className="flex justify-between">
+            <li className="flex justify-between items-center">
               <span className="text-gray-300">
                 {t('ramadan.laylatAlQadr')}
               </span>
-              <span className="text-gray-400">
+              <span className="text-gray-400 ml-2 text-right">
                 {isRTL ? '٢٧ مارس ٢٠٢٥' : 'March 27, 2025'}
               </span>
             </li>
-            <li className="flex justify-between">
+            <li className="flex justify-between items-center">
               <span className="text-gray-300">
                 {t('ramadan.lastDayRamadan')}
               </span>
-              <span className="text-gray-400">
+              <span className="text-gray-400 ml-2 text-right">
                 {isRTL ? '٣٠ مارس ٢٠٢٥' : 'March 30, 2025'}
               </span>
             </li>
-            <li className="flex justify-between">
+            <li className="flex justify-between items-center">
               <span className="text-gray-300">
                 {t('ramadan.eidAlFitr')}
               </span>
-              <span className="text-gray-400">
+              <span className="text-gray-400 ml-2 text-right">
                 {isRTL ? '٣١ مارس ٢٠٢٥' : 'March 31, 2025'}
               </span>
             </li>
           </ul>
         </div>
         
-        <div className="bg-gray-800 rounded-xl p-6">
+        <div className="bg-gray-800 rounded-xl p-4 md:p-6">
           <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <div className={`bg-green-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
               <Book className="text-green-400" size={22} />
@@ -93,7 +93,7 @@ const RamadanTab: React.FC = () => {
         </div>
       </div>
       
-      <div className="bg-gradient-to-br from-green-900/30 to-gray-800 rounded-xl p-6">
+      <div className="bg-gradient-to-br from-green-900/30 to-gray-800 rounded-xl p-4 md:p-6">
         <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <div className={`bg-amber-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
             <Star className="text-amber-400" size={22} fill="#f59e0b" />
@@ -104,25 +104,25 @@ const RamadanTab: React.FC = () => {
         </div>
         <ul className="space-y-3">
           <li className={`flex items-start ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>1</div>
+            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>1</div>
             <span className="text-gray-300">
               {t('ramadan.stayHydrated')}
             </span>
           </li>
           <li className={`flex items-start ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>2</div>
+            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>2</div>
             <span className="text-gray-300">
               {t('ramadan.eatBalancedSuhoor')}
             </span>
           </li>
           <li className={`flex items-start ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>3</div>
+            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>3</div>
             <span className="text-gray-300">
               {t('ramadan.breakFastWithDates')}
             </span>
           </li>
           <li className={`flex items-start ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>4</div>
+            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>4</div>
             <span className="text-gray-300">
               {t('ramadan.planTaraweeh')}
             </span>

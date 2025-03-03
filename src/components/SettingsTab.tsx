@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { getCalculationMethodName, getMadhabName } from '../data/cities';
-import { Bell, BellOff, Clock, Globe, Shield, Code } from 'lucide-react';
+import { Bell, BellOff, Clock, Globe, Shield, Code, ChevronDown } from 'lucide-react';
 import { requestNotificationPermission } from '../services/prayerTimeService';
 import { CalculationMethod, MadhabType, Language } from '../types';
 import useLocalization from '../hooks/useLocalization';
@@ -11,6 +11,7 @@ const SettingsTab: React.FC = () => {
   const { settings, updateSettings } = useAppContext();
   const { t, isRTL } = useLocalization();
   const navigate = useNavigate();
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   
   const handleCalculationMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateSettings({ calculationMethod: Number(e.target.value) as CalculationMethod });
@@ -37,79 +38,57 @@ const SettingsTab: React.FC = () => {
   
   const handleLanguageChange = (language: Language) => {
     updateSettings({ language });
+    setLanguageDropdownOpen(false);
+  };
+  
+  const languageNames: Record<Language, string> = {
+    'en': 'English',
+    'ru': 'Русский',
+    'ar': 'العربية',
+    'tr': 'Türkçe',
+    'tt': 'Татарча'
   };
   
   return (
     <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
-      <h2 className="text-2xl font-semibold mb-6">
+      <h2 className="text-2xl font-semibold mb-4">
         {t('settings.settings')}
       </h2>
       
-      <div className="space-y-8">
-        <div className="bg-gray-800 rounded-xl shadow-sm p-6">
+      <div className="space-y-6">
+        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
           <h3 className="font-medium mb-4 text-lg">
             {t('settings.language')}
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="relative">
             <button
-              onClick={() => handleLanguageChange('en')}
-              className={`
-                py-4 px-5 rounded-xl border transition-colors flex items-center justify-center
-                ${settings.language === 'en' 
-                  ? 'bg-green-900/20 border-green-800 text-green-400' 
-                  : 'border-gray-700 hover:bg-gray-700'}
-              `}
+              onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
+              className="w-full flex items-center justify-between py-3 px-4 rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-colors"
             >
-              <span className="text-lg">English</span>
+              <span className="text-lg">{languageNames[settings.language]}</span>
+              <ChevronDown size={20} className={`transition-transform ${languageDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
-            <button
-              onClick={() => handleLanguageChange('ru')}
-              className={`
-                py-4 px-5 rounded-xl border transition-colors flex items-center justify-center
-                ${settings.language === 'ru' 
-                  ? 'bg-green-900/20 border-green-800 text-green-400' 
-                  : 'border-gray-700 hover:bg-gray-700'}
-              `}
-            >
-              <span className="text-lg">Русский</span>
-            </button>
-            <button
-              onClick={() => handleLanguageChange('ar')}
-              className={`
-                py-4 px-5 rounded-xl border transition-colors flex items-center justify-center
-                ${settings.language === 'ar' 
-                  ? 'bg-green-900/20 border-green-800 text-green-400' 
-                  : 'border-gray-700 hover:bg-gray-700'}
-              `}
-            >
-              <span className="text-lg">العربية</span>
-            </button>
-            <button
-              onClick={() => handleLanguageChange('tr')}
-              className={`
-                py-4 px-5 rounded-xl border transition-colors flex items-center justify-center
-                ${settings.language === 'tr' 
-                  ? 'bg-green-900/20 border-green-800 text-green-400' 
-                  : 'border-gray-700 hover:bg-gray-700'}
-              `}
-            >
-              <span className="text-lg">Türkçe</span>
-            </button>
-            <button
-              onClick={() => handleLanguageChange('tt')}
-              className={`
-                py-4 px-5 rounded-xl border transition-colors flex items-center justify-center
-                ${settings.language === 'tt' 
-                  ? 'bg-green-900/20 border-green-800 text-green-400' 
-                  : 'border-gray-700 hover:bg-gray-700'}
-              `}
-            >
-              <span className="text-lg">Татарча</span>
-            </button>
+            
+            {languageDropdownOpen && (
+              <div className="absolute z-10 mt-2 w-full bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden">
+                {Object.entries(languageNames).map(([code, name]) => (
+                  <button
+                    key={code}
+                    onClick={() => handleLanguageChange(code as Language)}
+                    className={`
+                      w-full text-left py-3 px-4 hover:bg-gray-700 transition-colors
+                      ${settings.language === code ? 'bg-green-900/20 text-green-400' : ''}
+                    `}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         
-        <div className="bg-gray-800 rounded-xl shadow-sm p-6">
+        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
           <h3 className="font-medium mb-4 text-lg">
             {t('settings.calculationMethod')}
           </h3>
@@ -139,7 +118,7 @@ const SettingsTab: React.FC = () => {
           </p>
         </div>
         
-        <div className="bg-gray-800 rounded-xl shadow-sm p-6">
+        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
           <h3 className="font-medium mb-4 text-lg">
             {t('settings.asrCalculation')}
           </h3>
@@ -156,7 +135,7 @@ const SettingsTab: React.FC = () => {
           </p>
         </div>
         
-        <div className="bg-gray-800 rounded-xl shadow-sm p-6">
+        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
           <h3 className="font-medium mb-4 text-lg">
             {t('settings.timeFormat')}
           </h3>
@@ -164,7 +143,7 @@ const SettingsTab: React.FC = () => {
             <button
               onClick={() => handleTimeFormatChange('12h')}
               className={`
-                flex-1 py-3 px-5 rounded-xl border transition-colors
+                flex-1 py-3 px-4 rounded-xl border transition-colors
                 ${settings.timeFormat === '12h'
                   ? 'bg-green-900/20 border-green-800 text-green-400'
                   : 'border-gray-700 hover:bg-gray-700'}
@@ -178,7 +157,7 @@ const SettingsTab: React.FC = () => {
             <button
               onClick={() => handleTimeFormatChange('24h')}
               className={`
-                flex-1 py-3 px-5 rounded-xl border transition-colors
+                flex-1 py-3 px-4 rounded-xl border transition-colors
                 ${settings.timeFormat === '24h'
                   ? 'bg-green-900/20 border-green-800 text-green-400'
                   : 'border-gray-700 hover:bg-gray-700'}
@@ -192,14 +171,14 @@ const SettingsTab: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-gray-800 rounded-xl shadow-sm p-6">
+        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
           <h3 className="font-medium mb-4 text-lg">
             {t('settings.notifications')}
           </h3>
           <button
             onClick={toggleNotifications}
             className={`
-              w-full py-4 px-5 rounded-xl border transition-colors flex items-center justify-center
+              w-full py-3 px-4 rounded-xl border transition-colors flex items-center justify-center
               ${settings.notifications
                 ? 'bg-green-900/20 border-green-800 text-green-400'
                 : 'border-gray-700 hover:bg-gray-700'}
@@ -224,13 +203,13 @@ const SettingsTab: React.FC = () => {
           </p>
         </div>
         
-        <div className="bg-gray-800 rounded-xl shadow-sm p-6">
+        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
           <h3 className="font-medium mb-4 text-lg">
             {t('settings.privacy')}
           </h3>
           <button
             onClick={() => navigate('/privacy')}
-            className="w-full py-4 px-5 rounded-xl border border-gray-700 hover:bg-gray-700 transition-colors flex items-center justify-center"
+            className="w-full py-3 px-4 rounded-xl border border-gray-700 hover:bg-gray-700 transition-colors flex items-center justify-center"
           >
             <Shield size={20} className={`${isRTL ? 'ml-3' : 'mr-3'}`} />
             <span className="text-lg">{t('settings.privacyPolicy')}</span>
@@ -240,7 +219,7 @@ const SettingsTab: React.FC = () => {
           </p>
         </div>
         
-        <div className="bg-gray-800 rounded-xl shadow-sm p-6">
+        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
           <h3 className="font-medium mb-4 text-lg">
             {t('settings.developer')}
           </h3>

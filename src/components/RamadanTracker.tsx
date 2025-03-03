@@ -81,7 +81,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
         <div className="absolute bottom-0 left-0 w-16 h-16 bg-green-500/10 rounded-full -ml-8 -mb-8"></div>
         
         {/* Header */}
-        <div className="relative p-6 flex items-center justify-between">
+        <div className="relative p-4 md:p-6 flex items-center justify-between">
           <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
             <div className={`bg-green-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
               <Moon className="text-green-400" size={24} />
@@ -98,10 +98,10 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
         </div>
         
         {/* Content */}
-        <div className="p-6 pt-2">
+        <div className="p-4 md:p-6 pt-2">
           {ramadanInfo.isRamadan ? (
             <>
-              <div className="mb-6">
+              <div className="mb-5">
                 <p className="text-2xl font-medium text-green-300">
                   {t('ramadanTracker.dayOfRamadan', { day: ramadanInfo.currentDay })}
                 </p>
@@ -110,8 +110,8 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
                 </p>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-gray-800/50 rounded-lg p-4">
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                <div className="bg-gray-800/50 rounded-lg p-3 md:p-4">
                   <div className={`flex items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <Sunrise className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
                     <p className="text-sm text-gray-400">
@@ -121,7 +121,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
                   <p className="font-medium text-lg">{suhoorTime}</p>
                 </div>
                 
-                <div className="bg-gray-800/50 rounded-lg p-4">
+                <div className="bg-gray-800/50 rounded-lg p-3 md:p-4">
                   <div className={`flex items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <Sunset className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
                     <p className="text-sm text-gray-400">

@@ -17,7 +17,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className={`min-h-screen flex flex-col dark bg-gray-900 text-white ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Mobile header - only visible on mobile */}
-      <header className="md:hidden p-4 border-b dark:border-gray-700 flex justify-between items-center fixed top-0 left-0 right-0 z-10 bg-gray-900">
+      <header className="md:hidden p-3 border-b dark:border-gray-700 flex justify-between items-center fixed top-0 left-0 right-0 z-10 bg-gray-900">
         <div className="flex items-center">
           <Moon className="text-green-500 mr-2" size={24} />
           <h1 className="text-xl font-bold text-green-500 dark:text-green-400">
@@ -67,7 +67,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
         
         {/* Main content */}
-        <div className="flex-1 p-4 pt-6 pb-8 md:p-8 md:pt-10 md:pb-12 overflow-y-auto md:ml-72 mt-16 mb-16 md:mt-0 md:mb-0">
+        <div className="flex-1 p-3 pt-4 pb-6 md:p-8 md:pt-10 md:pb-12 overflow-y-auto md:ml-72 mt-16 mb-16 md:mt-0 md:mb-0">
           {children}
         </div>
       </main>

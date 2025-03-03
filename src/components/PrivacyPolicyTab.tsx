@@ -11,17 +11,17 @@ const PrivacyPolicyTab: React.FC = () => {
     <div className={`max-w-4xl mx-auto ${isRTL ? 'text-right' : ''}`}>
       <button 
         onClick={() => navigate('/settings')}
-        className={`flex items-center text-green-500 hover:text-green-400 mb-6 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+        className={`flex items-center text-green-500 hover:text-green-400 mb-5 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
       >
         <ArrowLeft size={20} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />
         <span className="text-lg">{t('privacy.backToSettings')}</span>
       </button>
       
-      <h2 className="text-2xl font-semibold mb-8">
+      <h2 className="text-2xl font-semibold mb-6">
         {t('privacy.privacyPolicy')}
       </h2>
       
-      <div className="space-y-8 text-gray-300">
+      <div className="space-y-6 text-gray-300">
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.introduction')}
@@ -146,7 +146,7 @@ const PrivacyPolicyTab: React.FC = () => {
           </p>
         </section>
         
-        <div className="pt-6 text-sm text-gray-400 border-t border-gray-700">
+        <div className="pt-5 text-sm text-gray-400 border-t border-gray-700">
           <p>
             {t('privacy.lastUpdated')}
           </p>

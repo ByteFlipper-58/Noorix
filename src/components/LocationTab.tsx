@@ -73,15 +73,15 @@ const LocationTab: React.FC = () => {
   
   return (
     <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
-      <h2 className="text-2xl font-semibold mb-6">
+      <h2 className="text-2xl font-semibold mb-4">
         {t('location.locationSettings')}
       </h2>
       
-      <div className="mb-8">
+      <div className="mb-6">
         <button
           onClick={detectLocation}
           disabled={loading}
-          className="w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <span className="animate-spin mr-2 h-5 w-5 border-t-2 border-b-2 border-white rounded-full"></span>
@@ -96,7 +96,7 @@ const LocationTab: React.FC = () => {
         )}
         
         {location && (
-          <div className="mt-5 p-5 bg-gray-800 rounded-xl shadow-sm">
+          <div className="mt-4 p-4 bg-gray-800 rounded-xl shadow-sm">
             <h3 className="font-medium mb-3 text-lg">
               {t('location.currentLocation')}
             </h3>
@@ -117,11 +117,11 @@ const LocationTab: React.FC = () => {
         )}
       </div>
       
-      <div className="mb-6">
-        <h3 className="font-medium mb-4 text-xl">
+      <div className="mb-5">
+        <h3 className="font-medium mb-3 text-xl">
           {t('location.orSelectCity')}
         </h3>
-        <div className="relative mb-5">
+        <div className="relative mb-4">
           <input
             type="text"
             placeholder={t('location.searchCities')}
@@ -134,7 +134,7 @@ const LocationTab: React.FC = () => {
       </div>
       
       {showNotFoundMessage && (
-        <div className="mb-6 p-5 bg-amber-900/20 border border-amber-800 rounded-xl text-amber-300">
+        <div className="mb-5 p-4 bg-amber-900/20 border border-amber-800 rounded-xl text-amber-300">
           <p className="flex items-center">
             <MapPin className={`${isRTL ? 'ml-2' : 'mr-2'}`} size={20} />
             {t('location.notFoundInCityList', { query: searchQuery })}
@@ -148,7 +148,7 @@ const LocationTab: React.FC = () => {
             key={city.id}
             onClick={() => selectCity(city)}
             className={`
-              text-left p-4 rounded-xl transition-colors
+              text-left p-3 rounded-xl transition-colors
               ${location?.city === city.name 
                 ? 'bg-green-900/20 dark:border-green-800 border' 
                 : 'bg-gray-800 hover:bg-gray-700 border border-gray-700'}
