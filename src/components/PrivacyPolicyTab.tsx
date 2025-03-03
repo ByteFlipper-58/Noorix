@@ -2,15 +2,21 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
+import { logAnalyticsEvent } from '../firebase/firebase';
 
 const PrivacyPolicyTab: React.FC = () => {
   const { t, isRTL } = useLocalization();
   const navigate = useNavigate();
   
+  const handleBackToSettings = () => {
+    navigate('/settings');
+    logAnalyticsEvent('navigation', { from: 'privacy', to: 'settings' });
+  };
+  
   return (
     <div className={`max-w-4xl mx-auto ${isRTL ? 'text-right' : ''}`}>
       <button 
-        onClick={() => navigate('/settings')}
+        onClick={handleBackToSettings}
         className={`flex items-center text-green-500 hover:text-green-400 mb-5 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
       >
         <ArrowLeft size={20} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />
@@ -77,6 +83,9 @@ const PrivacyPolicyTab: React.FC = () => {
           <p className="text-lg">
             {t('privacy.dataStorageText')}
           </p>
+          <p className="text-lg mt-2">
+            Некоторые данные, такие как информация о местоположении и настройки приложения, также используются для аналитики и улучшения методов расчета времени молитв. Эти данные хранятся временно на серверах Firebase и используются только в агрегированном виде.
+          </p>
         </section>
         
         <section>
@@ -89,6 +98,9 @@ const PrivacyPolicyTab: React.FC = () => {
           <ul className={`list-disc ${isRTL ? 'pr-8' : 'pl-8'} space-y-2 text-lg`}>
             <li>
               <strong>Firebase Analytics</strong>: {t('privacy.firebaseAnalytics')}
+            </li>
+            <li>
+              <strong>Firebase Crashlytics</strong>: Для сбора информации о сбоях приложения и улучшения стабильности
             </li>
             <li>
               <strong>Aladhan API</strong>: {t('privacy.aladhanAPI')}
@@ -110,20 +122,17 @@ const PrivacyPolicyTab: React.FC = () => {
             {t('privacy.yourRights')}
           </h3>
           <p className="mb-3 text-lg">
-            {t('privacy.youHaveRights')}
+            Поскольку мы используем анонимизированные данные для аналитики, которые хранятся на серверах Firebase, мы не можем предоставить прямой доступ к этим данным или их удаление на индивидуальной основе. Однако вы можете:
           </p>
           <ul className={`list-disc ${isRTL ? 'pr-8' : 'pl-8'} space-y-2 text-lg`}>
             <li>
-              {t('privacy.rightToAccess')}
+              Отключить сбор данных, используя настройки вашего браузера или мобильного устройства
             </li>
             <li>
-              {t('privacy.rightToRectify')}
+              Очистить локальные данные приложения, хранящиеся на вашем устройстве
             </li>
             <li>
-              {t('privacy.rightToErasure')}
-            </li>
-            <li>
-              {t('privacy.rightToRestrict')}
+              Связаться с нами для получения дополнительной информации о том, как мы обрабатываем ваши данные
             </li>
           </ul>
         </section>

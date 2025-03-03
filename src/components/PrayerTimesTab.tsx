@@ -8,6 +8,7 @@ import { getMoonPhaseEmoji, getMoonPhaseName } from '../data/cities';
 import IftarTimer from './IftarTimer';
 import { getPrayerNameTranslation } from '../services/languageService';
 import useLocalization from '../hooks/useLocalization';
+import { logAnalyticsEvent } from '../firebase/firebase';
 
 const PrayerTimesTab: React.FC = () => {
   const { prayerTimes, loading, error, settings, location } = useAppContext();
@@ -57,8 +58,17 @@ const PrayerTimesTab: React.FC = () => {
         if (settings.notifications) {
           scheduleNotification(next.name, next.time);
         }
+
+        // Log next prayer to analytics
+        logAnalyticsEvent('next_prayer_calculated', {
+          prayerName: next.name,
+          countdown: next.countdown
+        });
       } catch (err) {
         console.error('Error calculating next prayer:', err);
+        logAnalyticsEvent('next_prayer_calculation_error', {
+          error: err instanceof Error ? err.message : 'Unknown error'
+        });
       }
     }
   }, [prayerTimes, currentTime, settings.notifications]);
@@ -93,7 +103,10 @@ const PrayerTimesTab: React.FC = () => {
           {t('prayerTimes.pleaseSetLocation')}
         </p>
         <button 
-          onClick={() => navigate('/location')}
+          onClick={() => {
+            navigate('/location');
+            logAnalyticsEvent('navigation', { from: 'prayer_times', to: 'location', reason: 'no_location' });
+          }}
           className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors flex items-center mx-auto"
         >
           <MapPin size={18} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />

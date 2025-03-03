@@ -1,7 +1,8 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Clock, MapPin, Moon } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
+import { logAnalyticsEvent } from '../firebase/firebase';
 
 interface NavigationProps {
   orientation: 'horizontal' | 'vertical';
@@ -9,6 +10,7 @@ interface NavigationProps {
 
 const Navigation: React.FC<NavigationProps> = ({ orientation }) => {
   const { t, isRTL } = useLocalization();
+  const location = useLocation();
   
   const tabs = [
     { 
@@ -32,6 +34,16 @@ const Navigation: React.FC<NavigationProps> = ({ orientation }) => {
   ];
   
   const isHorizontal = orientation === 'horizontal';
+
+  const handleNavigation = (tabId: string, path: string) => {
+    if (location.pathname !== path) {
+      logAnalyticsEvent('navigation', {
+        from: location.pathname,
+        to: path,
+        tabId: tabId
+      });
+    }
+  };
   
   return (
     <nav className={`${isHorizontal ? 'flex justify-around' : 'flex flex-col'}`}>
@@ -39,6 +51,7 @@ const Navigation: React.FC<NavigationProps> = ({ orientation }) => {
         <NavLink
           key={tab.id}
           to={tab.path}
+          onClick={() => handleNavigation(tab.id, tab.path)}
           className={({ isActive }) => `
             ${isHorizontal ? 'py-3 flex-1' : 'py-4 px-6 mb-2 rounded-xl transition-all'}
             flex ${isHorizontal ? 'flex-col' : ''} items-center 

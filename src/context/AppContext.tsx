@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserSettings, Location, PrayerTimesData, CalculationMethod, MadhabType, Language } from '../types';
 import { fetchPrayerTimes } from '../services/prayerTimeService';
 import { detectUserLanguage } from '../services/languageService';
+import { logAnalyticsEvent, setAnalyticsUserProperties } from '../firebase/firebase';
 
 interface AppContextType {
   settings: UserSettings;
@@ -44,6 +45,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return localStorage.getItem('noorixFirstVisit') !== 'false';
   });
 
+  // Log first visit to analytics
+  useEffect(() => {
+    if (isFirstVisit) {
+      logAnalyticsEvent('first_visit');
+    }
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('prayerTimeSettings', JSON.stringify(settings));
     
@@ -58,12 +66,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       document.documentElement.dir = 'ltr';
       document.documentElement.lang = settings.language;
     }
+
+    // Log settings changes to analytics
+    setAnalyticsUserProperties({
+      language: settings.language,
+      calculationMethod: settings.calculationMethod,
+      madhab: settings.madhab,
+      timeFormat: settings.timeFormat,
+      notificationsEnabled: settings.notifications
+    });
+    
+    logAnalyticsEvent('settings_updated', {
+      language: settings.language,
+      calculationMethod: settings.calculationMethod,
+      madhab: settings.madhab,
+      timeFormat: settings.timeFormat,
+      notificationsEnabled: settings.notifications
+    });
   }, [settings]);
 
   useEffect(() => {
     if (location) {
       localStorage.setItem('prayerTimeLocation', JSON.stringify(location));
       refreshPrayerTimes();
+      
+      // Log location changes to analytics
+      logAnalyticsEvent('location_updated', {
+        hasCity: !!location.city,
+        country: location.country || 'unknown'
+      });
     }
   }, [location, settings.calculationMethod, settings.madhab]);
 
@@ -95,6 +126,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         settings.madhab
       );
       setPrayerTimes(data);
+      
+      // Log successful prayer times fetch
+      logAnalyticsEvent('prayer_times_fetched', {
+        calculationMethod: settings.calculationMethod,
+        madhab: settings.madhab
+      });
     } catch (err) {
       const errorMessage: Record<Language, string> = {
         'en': 'Failed to fetch prayer times. Please try again later.',
@@ -105,6 +142,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       };
       setError(errorMessage[settings.language]);
       console.error(err);
+      
+      // Log error to analytics
+      logAnalyticsEvent('prayer_times_error', {
+        errorMessage: err instanceof Error ? err.message : 'Unknown error',
+        calculationMethod: settings.calculationMethod,
+        madhab: settings.madhab
+      });
     } finally {
       setLoading(false);
     }
