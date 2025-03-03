@@ -137,5 +137,26 @@
     "timeUntilIftar": "İftara Kalan Süre",
     "timeUntilSuhoorEnds": "Sahur bitişine kalan süre:",
     "timeUntilBreakingFast": "Oruç açmaya kalan süre:"
+  },
+  "userGuide": {
+    "title": "Noorix'e Hoş Geldiniz",
+    "welcome": "Noorix'e Hoş Geldiniz",
+    "welcomeDescription": "Noorix, konumunuza göre namaz vakitlerini doğru bir şekilde takip etmenize yardımcı olur. Hızlı bir tura başlayalım.",
+    "location": "Konumunuzu Ayarlayın",
+    "locationDescription": "Doğru namaz vakitlerini sağlamak için Noorix konumunuzu bilmeye ihtiyaç duyar. Otomatik algılamaya izin verebilir veya listemizden bir şehir seçebilirsiniz.",
+    "setLocation": "Şimdi Konum Ayarla",
+    "goToLocationSettings": "Konum Ayarlarına Git",
+    "backToGuide": "Kılavuza Geri Dön",
+    "prayerTimes": "Namaz Vakitleri",
+    "prayerTimesDescription": "Konumunuz için doğru namaz vakitlerini görüntüleyin, bir sonraki namaza geri sayım ve mevcut ay evresinin görsel göstergesi ile.",
+    "notifications": "Namaz Bildirimleri",
+    "notificationsDescription": "Bildirimleri etkinleştirerek namaz vakitlerini asla kaçırmayın. Her namaz vaktinden önce uyarılar alacaksınız.",
+    "enableNotifications": "Bildirimleri Etkinleştir",
+    "skipForNow": "Şimdilik Geç",
+    "settings": "Deneyiminizi Özelleştirin",
+    "settingsDescription": "Deneyiminizi kişiselleştirmek için hesaplama yöntemlerini, zaman formatını, dili ve diğer ayarları düzenleyin.",
+    "back": "Geri",
+    "next": "İleri",
+    "finish": "Başla"
   }
 }

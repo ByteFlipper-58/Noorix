@@ -137,5 +137,26 @@
     "timeUntilIftar": "Time Until Iftar",
     "timeUntilSuhoorEnds": "Time until Suhoor ends:",
     "timeUntilBreakingFast": "Time until breaking fast:"
+  },
+  "userGuide": {
+    "title": "Welcome to Noorix",
+    "welcome": "Welcome to Noorix",
+    "welcomeDescription": "Noorix helps you track prayer times accurately based on your location. Let's get you started with a quick tour.",
+    "location": "Set Your Location",
+    "locationDescription": "To provide accurate prayer times, Noorix needs your location. You can either allow automatic detection or select a city from our list.",
+    "setLocation": "Set Location Now",
+    "goToLocationSettings": "Go to Location Settings",
+    "backToGuide": "Back to Guide",
+    "prayerTimes": "Prayer Times",
+    "prayerTimesDescription": "View accurate prayer times for your location, with countdown to the next prayer and a visual indicator of the current moon phase.",
+    "notifications": "Prayer Notifications",
+    "notificationsDescription": "Never miss a prayer time by enabling notifications. You'll receive alerts before each prayer time.",
+    "enableNotifications": "Enable Notifications",
+    "skipForNow": "Skip for now",
+    "settings": "Customize Your Experience",
+    "settingsDescription": "Adjust calculation methods, time format, language, and other settings to personalize your experience.",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Get Started"
   }
 }

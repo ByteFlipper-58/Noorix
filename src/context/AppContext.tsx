@@ -12,6 +12,8 @@ interface AppContextType {
   loading: boolean;
   error: string | null;
   refreshPrayerTimes: () => Promise<void>;
+  isFirstVisit: boolean;
+  setIsFirstVisit: (value: boolean) => void;
 }
 
 const defaultSettings: UserSettings = {
@@ -38,6 +40,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isFirstVisit, setIsFirstVisit] = useState<boolean>(() => {
+    return localStorage.getItem('noorixFirstVisit') !== 'false';
+  });
 
   useEffect(() => {
     localStorage.setItem('prayerTimeSettings', JSON.stringify(settings));
@@ -61,6 +66,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       refreshPrayerTimes();
     }
   }, [location, settings.calculationMethod, settings.madhab]);
+
+  useEffect(() => {
+    if (!isFirstVisit) {
+      localStorage.setItem('noorixFirstVisit', 'false');
+    }
+  }, [isFirstVisit]);
 
   const setLocation = (newLocation: Location) => {
     setLocationState(newLocation);
@@ -109,7 +120,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         prayerTimes,
         loading,
         error,
-        refreshPrayerTimes
+        refreshPrayerTimes,
+        isFirstVisit,
+        setIsFirstVisit
       }}
     >
       {children}
