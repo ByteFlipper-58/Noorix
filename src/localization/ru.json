@@ -5,6 +5,7 @@
   "navigation": {
     "prayerTimes": "Время Молитв",
     "ramadan": "Рамадан",
+    "islamicCalendar": "Исламский календарь",
     "location": "Местоположение"
   },
   "prayerTimes": {
@@ -158,5 +159,22 @@
     "back": "Назад",
     "next": "Далее",
     "finish": "Начать"
+  }, 
+  "islamicCalendar": {
+    "title": "Исламский календарь",
+    "currentYear": "Текущий исламский год",
+    "nextHoliday": "Ближайший праздник",
+    "importantDates": "Важные даты",
+    "holidays": "Исламские праздники",
+    "newYear": "Исламский Новый год",
+    "ashura": "День Ашура",
+    "mawlid": "Мавлид ан-Наби",
+    "israMiraj": "Исра и Мирадж",
+    "laylatBaraah": "Лейлат аль-Бараа",
+    "ramadanStart": "Начало Рамадана",
+    "laylatQadr": "Лейлат аль-Кадр",
+    "eidFitr": "Ид аль-Фитр",
+    "arafah": "День Арафа",
+    "eidAdha": "Ид аль-Адха"
   }
 }

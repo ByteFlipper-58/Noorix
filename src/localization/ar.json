@@ -5,6 +5,7 @@
   "navigation": {
     "prayerTimes": "أوقات الصلاة",
     "ramadan": "رمضان",
+    "islamicCalendar": "التقويم الإسلامي",
     "location": "الموقع"
   },
   "prayerTimes": {
@@ -158,5 +159,22 @@
     "back": "رجوع",
     "next": "التالي",
     "finish": "ابدأ الآن"
+  },
+  "islamicCalendar": {
+    "title": "التقويم الإسلامي",
+    "currentYear": "السنة الهجرية الحالية",
+    "nextHoliday": "العطلة القادمة",
+    "importantDates": "التواريخ الهامة",
+    "holidays": "الأعياد الإسلامية",
+    "newYear": "رأس السنة الهجرية",
+    "ashura": "يوم عاشوراء",
+    "mawlid": "المولد النبوي",
+    "israMiraj": "الإسراء والمعراج",
+    "laylatBaraah": "ليلة البراءة",
+    "ramadanStart": "بداية رمضان",
+    "laylatQadr": "ليلة القدر",
+    "eidFitr": "عيد الفطر",
+    "arafah": "يوم عرفة",
+    "eidAdha": "عيد الأضحى"
   }
 }

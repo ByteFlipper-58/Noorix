@@ -5,6 +5,7 @@
   "navigation": {
     "prayerTimes": "Намаз вакытлары",
     "ramadan": "Рамазан",
+    "islamicCalendar": "Ислам календаре",
     "location": "Урын"
   },
   "prayerTimes": {
@@ -158,5 +159,22 @@
     "back": "Артка",
     "next": "Алга",
     "finish": "Башлау"
+  },
+  "islamicCalendar": {
+    "title": "Ислам календаре",
+    "currentYear": "Хәзерге һиҗри ел",
+    "nextHoliday": "Киләсе бәйрәм",
+    "importantDates": "Мөһим даталар",
+    "holidays": "Ислам бәйрәмнәре",
+    "newYear": "Ислам Яңа елы",
+    "ashura": "Гашүрә көне",
+    "mawlid": "Мәүлид ән-Нәби",
+    "israMiraj": "Исра һәм Мигъраҗ",
+    "laylatBaraah": "Бәраәт кичәсе",
+    "ramadanStart": "Рамазан башы",
+    "laylatQadr": "Кадер кичәсе",
+    "eidFitr": "Гайдел-Фитыр",
+    "arafah": "Арафа көне",
+    "eidAdha": "Гайдел-Әдха"
   }
 }
