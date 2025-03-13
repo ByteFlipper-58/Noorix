@@ -4,6 +4,7 @@ import { AppProvider } from './context/AppContext';
 import Layout from './components/Layout';
 import PrayerTimesView from './views/PrayerTimesView';
 import RamadanView from './views/RamadanView';
+import IslamicCalendarView from './views/IslamicCalendarView';
 import LocationView from './views/LocationView';
 import SettingsView from './views/SettingsView';
 import PrivacyPolicyView from './views/PrivacyPolicyView';
@@ -30,6 +31,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<PrayerTimesView />} />
           <Route path="/ramadan" element={<RamadanView />} />
+          <Route path="/calendar" element={<IslamicCalendarView />} />
           <Route path="/location" element={<LocationView />} />
           <Route path="/settings" element={<SettingsView />} />
           <Route path="/privacy" element={<PrivacyPolicyView />} />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Clock, MapPin, Moon } from 'lucide-react';
+import { Clock, MapPin, Moon, Calendar } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
 import { logAnalyticsEvent } from '../firebase/firebase';
 
@@ -24,6 +24,12 @@ const Navigation: React.FC<NavigationProps> = ({ orientation }) => {
       path: '/ramadan',
       label: t('navigation.ramadan'), 
       icon: <Moon size={20} /> 
+    },
+    {
+      id: 'calendar',
+      path: '/calendar',
+      label: t('navigation.islamicCalendar'),
+      icon: <Calendar size={20} />
     },
     { 
       id: 'location', 
