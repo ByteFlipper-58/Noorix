@@ -3,9 +3,43 @@ import { useAppContext } from '../context/AppContext';
 import RamadanTracker from './RamadanTracker';
 import { Calendar, Book, Star, Gift } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
+import { format } from 'date-fns';
+import { ar, ru, tr, enUS } from 'date-fns/locale';
+import { Language } from '../types';
 
 const RamadanTab: React.FC = () => {
   const { t, isRTL } = useLocalization();
+  const { settings } = useAppContext();
+  
+  // Map language codes to date-fns locales
+  const localeMap: Record<Language, Locale> = {
+    en: enUS,
+    ru: ru,
+    ar: ar,
+    tr: tr,
+    tt: ru // Use Russian locale for Tatar as it's not available in date-fns
+  };
+
+  const formatDate = (dateStr: string | Date) => {
+    const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
+    const locale = localeMap[settings.language];
+    
+    if (settings.language === 'ar') {
+      // For Arabic, use a custom format
+      const formatted = format(date, 'dd MMMM yyyy', { locale });
+      // Convert numbers to Arabic numerals
+      return formatted.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    }
+    
+    if (settings.language === 'tt') {
+      // For Tatar, use Russian locale with custom month names
+      const formatted = format(date, 'dd MMMM yyyy', { locale: ru });
+      // You could add custom Tatar month name replacements here if needed
+      return formatted;
+    }
+    
+    return format(date, 'dd MMMM yyyy', { locale });
+  };
   
   return (
     <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
@@ -33,7 +67,7 @@ const RamadanTab: React.FC = () => {
                 {t('ramadan.firstDayRamadan')}
               </span>
               <span className="text-gray-400 ml-2 text-right">
-                {isRTL ? '١ مارس ٢٠٢٥' : 'March 1, 2025'}
+                {formatDate(new Date(2025, 2, 1))}
               </span>
             </li>
             <li className="flex justify-between items-center">
@@ -41,7 +75,7 @@ const RamadanTab: React.FC = () => {
                 {t('ramadan.laylatAlQadr')}
               </span>
               <span className="text-gray-400 ml-2 text-right">
-                {isRTL ? '٢٧ مارس ٢٠٢٥' : 'March 27, 2025'}
+                {formatDate(new Date(2025, 2, 27))}
               </span>
             </li>
             <li className="flex justify-between items-center">
@@ -49,7 +83,7 @@ const RamadanTab: React.FC = () => {
                 {t('ramadan.lastDayRamadan')}
               </span>
               <span className="text-gray-400 ml-2 text-right">
-                {isRTL ? '٣٠ مارس ٢٠٢٥' : 'March 30, 2025'}
+                {formatDate(new Date(2025, 2, 30))}
               </span>
             </li>
             <li className="flex justify-between items-center">
@@ -57,7 +91,7 @@ const RamadanTab: React.FC = () => {
                 {t('ramadan.eidAlFitr')}
               </span>
               <span className="text-gray-400 ml-2 text-right">
-                {isRTL ? '٣١ مارس ٢٠٢٥' : 'March 31, 2025'}
+                {formatDate(new Date(2025, 2, 31))}
               </span>
             </li>
           </ul>

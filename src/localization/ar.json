@@ -1,6 +1,9 @@
 {
   "common": {
-    "unknown": "غير معروف"
+    "unknown": "غير معروف",
+    "today": "اليوم",
+    "tomorrow": "غداً",
+    "inDays": "في {days} أيام"
   },
   "navigation": {
     "prayerTimes": "أوقات الصلاة",

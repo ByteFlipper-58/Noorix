@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { format, differenceInDays, addDays } from 'date-fns';
+import { ar, ru, tr, enUS } from 'date-fns/locale';
 import { Calendar, Sunrise, Sunset, Moon, Star } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
+import { Language } from '../types';
 
 interface RamadanTrackerProps {
   className?: string;
@@ -13,48 +15,44 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
   const { t, isRTL } = useLocalization();
   const [ramadanInfo, setRamadanInfo] = useState({
     isRamadan: false,
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: new Date(2025, 2, 1), // March 1, 2025
+    endDate: new Date(2025, 2, 30), // March 30, 2025
     currentDay: 0,
     daysLeft: 0,
     totalDays: 30,
   });
+
+  // Map language codes to date-fns locales
+  const localeMap: Record<Language, Locale> = {
+    en: enUS,
+    ru: ru,
+    ar: ar,
+    tr: tr,
+    tt: ru // Use Russian locale for Tatar as it's not available in date-fns
+  };
   
   useEffect(() => {
-    // Ramadan 2025 is approximately from March 1 to March 30
-    // This is an approximation - for accurate dates, we would need a proper Hijri calendar calculation
-    const ramadanStart2025 = new Date(2025, 2, 1); // March 1, 2025
-    const ramadanEnd2025 = new Date(2025, 2, 30); // March 30, 2025
-    
     const today = new Date();
     
     // For demonstration purposes, we'll simulate that Ramadan is happening now
-    // In a real app, you would use proper Hijri calendar calculations
-    
-    // Create a simulated "today" date that falls within Ramadan period for demo purposes
-    // This simulates as if today is within the Ramadan period
     const simulatedToday = new Date(2025, 2, today.getDate() > 30 ? 30 : today.getDate());
     
     // Check if we're in Ramadan period
-    const isRamadan = simulatedToday >= ramadanStart2025 && simulatedToday <= ramadanEnd2025;
+    const isRamadan = simulatedToday >= ramadanInfo.startDate && simulatedToday <= ramadanInfo.endDate;
     
     // Calculate which day of Ramadan it is
-    const daysSinceStart = isRamadan ? differenceInDays(simulatedToday, ramadanStart2025) + 1 : 0;
+    const daysSinceStart = isRamadan ? differenceInDays(simulatedToday, ramadanInfo.startDate) + 1 : 0;
     
     // Calculate days left in Ramadan
-    const daysLeft = isRamadan ? differenceInDays(ramadanEnd2025, simulatedToday) : 
-                     (simulatedToday < ramadanStart2025 ? differenceInDays(ramadanStart2025, simulatedToday) : 0);
+    const daysLeft = isRamadan ? differenceInDays(ramadanInfo.endDate, simulatedToday) : 
+                     (simulatedToday < ramadanInfo.startDate ? differenceInDays(ramadanInfo.startDate, simulatedToday) : 0);
     
-    const totalDays = 30;
-    
-    setRamadanInfo({
+    setRamadanInfo(prev => ({
+      ...prev,
       isRamadan,
-      startDate: ramadanStart2025,
-      endDate: ramadanEnd2025,
       currentDay: daysSinceStart,
       daysLeft: isRamadan ? daysLeft : daysLeft,
-      totalDays,
-    });
+    }));
   }, []);
   
   // Get Suhoor and Iftar times from prayer times
@@ -62,15 +60,23 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
   const iftarTime = prayerTimes?.timings?.Maghrib || '--:--';
   
   const formatDate = (date: Date) => {
+    const locale = localeMap[settings.language];
+    
     if (settings.language === 'ar') {
-      // For Arabic, manually format the date
-      const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-      const day = date.getDate();
-      const month = months[date.getMonth()];
-      const year = date.getFullYear();
-      return `${day} ${month} ${year}`;
+      // For Arabic, use a custom format
+      const formatted = format(date, 'dd MMMM yyyy', { locale });
+      // Convert numbers to Arabic numerals
+      return formatted.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
     }
-    return format(date, settings.language === 'en' ? 'MMMM d, yyyy' : 'dd MMMM yyyy');
+    
+    if (settings.language === 'tt') {
+      // For Tatar, use Russian locale with custom month names
+      const formatted = format(date, 'dd MMMM yyyy', { locale: ru });
+      // You could add custom Tatar month name replacements here if needed
+      return formatted;
+    }
+    
+    return format(date, 'dd MMMM yyyy', { locale });
   };
   
   return (

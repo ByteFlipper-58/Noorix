@@ -1,6 +1,9 @@
 {
   "common": {
-    "unknown": "Неизвестно"
+    "unknown": "Неизвестно",
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "inDays": "Через {days} дней"
   },
   "navigation": {
     "prayerTimes": "Время Молитв",
@@ -159,7 +162,7 @@
     "back": "Назад",
     "next": "Далее",
     "finish": "Начать"
-  }, 
+  },
   "islamicCalendar": {
     "title": "Исламский календарь",
     "currentYear": "Текущий исламский год",

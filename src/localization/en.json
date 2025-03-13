@@ -1,6 +1,9 @@
 {
   "common": {
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "inDays": "In {days} days"
   },
   "navigation": {
     "prayerTimes": "Prayer Times",

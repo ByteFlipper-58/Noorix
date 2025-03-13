@@ -1,6 +1,9 @@
 {
   "common": {
-    "unknown": "Билгесез"
+    "unknown": "Билгесез",
+    "today": "Бүген",
+    "tomorrow": "Иртәгә",
+    "inDays": "{days} көннән"
   },
   "navigation": {
     "prayerTimes": "Намаз вакытлары",

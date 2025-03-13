@@ -1,59 +1,126 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { Calendar, Star, Gift } from 'lucide-react';
+import { Calendar, Star } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
+import { format, addDays, differenceInDays } from 'date-fns';
+import { ar, ru, tr, enUS } from 'date-fns/locale';
+import { Language } from '../types';
 
 const IslamicCalendarTab: React.FC = () => {
   const { t, isRTL } = useLocalization();
+  const { settings } = useAppContext();
   
-  // Important Islamic dates for 2025
-  const importantDates = [
-    {
-      month: "Muharram",
-      dates: [
-        { day: "1", gregorian: "July 29, 2024", name: "Islamic New Year 1446" },
-        { day: "10", gregorian: "August 7, 2024", name: "Day of Ashura" }
-      ]
-    },
-    {
-      month: "Rabi' al-Awwal",
-      dates: [
-        { day: "12", gregorian: "October 8, 2024", name: "Mawlid al-Nabi (Prophet's Birthday)" }
-      ]
-    },
-    {
-      month: "Rajab",
-      dates: [
-        { day: "27", gregorian: "February 15, 2025", name: "Isra and Mi'raj" }
-      ]
-    },
-    {
-      month: "Sha'ban",
-      dates: [
-        { day: "15", gregorian: "March 5, 2025", name: "Laylat al-Bara'ah" }
-      ]
-    },
-    {
-      month: "Ramadan",
-      dates: [
-        { day: "1", gregorian: "March 1, 2025", name: "Beginning of Ramadan" },
-        { day: "27", gregorian: "March 27, 2025", name: "Laylat al-Qadr (Night of Power)" }
-      ]
-    },
-    {
-      month: "Shawwal",
-      dates: [
-        { day: "1", gregorian: "March 31, 2025", name: "Eid al-Fitr" }
-      ]
-    },
-    {
-      month: "Dhu al-Hijjah",
-      dates: [
-        { day: "9", gregorian: "June 27, 2025", name: "Day of Arafah" },
-        { day: "10", gregorian: "June 28, 2025", name: "Eid al-Adha" }
-      ]
+  // Map language codes to date-fns locales
+  const localeMap: Record<Language, Locale> = {
+    en: enUS,
+    ru: ru,
+    ar: ar,
+    tr: tr,
+    tt: ru // Use Russian locale for Tatar as it's not available in date-fns
+  };
+
+  const formatDate = (dateStr: string | Date) => {
+    const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
+    const locale = localeMap[settings.language];
+    
+    if (settings.language === 'ar') {
+      // For Arabic, use a custom format
+      const formatted = format(date, 'dd MMMM yyyy', { locale });
+      // Convert numbers to Arabic numerals
+      return formatted.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
     }
-  ];
+    
+    if (settings.language === 'tt') {
+      // For Tatar, use Russian locale with custom month names
+      const formatted = format(date, 'dd MMMM yyyy', { locale: ru });
+      // You could add custom Tatar month name replacements here if needed
+      return formatted;
+    }
+    
+    return format(date, 'dd MMMM yyyy', { locale });
+  };
+  
+  // Important Islamic dates for current and next year
+  const importantDates = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const dates = [
+      {
+        month: "Muharram",
+        dates: [
+          { day: "1", date: new Date(2024, 6, 29), name: t('islamicCalendar.newYear') },
+          { day: "10", date: new Date(2024, 7, 7), name: t('islamicCalendar.ashura') }
+        ]
+      },
+      {
+        month: "Rabi' al-Awwal",
+        dates: [
+          { day: "12", date: new Date(2024, 9, 8), name: t('islamicCalendar.mawlid') }
+        ]
+      },
+      {
+        month: "Rajab",
+        dates: [
+          { day: "27", date: new Date(2025, 1, 15), name: t('islamicCalendar.israMiraj') }
+        ]
+      },
+      {
+        month: "Sha'ban",
+        dates: [
+          { day: "15", date: new Date(2025, 2, 5), name: t('islamicCalendar.laylatBaraah') }
+        ]
+      },
+      {
+        month: "Ramadan",
+        dates: [
+          { day: "1", date: new Date(2025, 2, 1), name: t('islamicCalendar.ramadanStart') },
+          { day: "27", date: new Date(2025, 2, 27), name: t('islamicCalendar.laylatQadr') }
+        ]
+      },
+      {
+        month: "Shawwal",
+        dates: [
+          { day: "1", date: new Date(2025, 2, 31), name: t('islamicCalendar.eidFitr') }
+        ]
+      },
+      {
+        month: "Dhu al-Hijjah",
+        dates: [
+          { day: "9", date: new Date(2025, 5, 27), name: t('islamicCalendar.arafah') },
+          { day: "10", date: new Date(2025, 5, 28), name: t('islamicCalendar.eidAdha') }
+        ]
+      }
+    ];
+
+    // Add next year's dates
+    const nextYearDates = JSON.parse(JSON.stringify(dates));
+    nextYearDates.forEach((month: any) => {
+      month.dates.forEach((date: any) => {
+        date.date = addDays(new Date(date.date), 354); // Approximate Islamic year
+      });
+    });
+
+    return [...dates, ...nextYearDates];
+  }, [t]);
+
+  // Find the next holiday
+  const nextHoliday = useMemo(() => {
+    const today = new Date();
+    let nextEvent = null;
+    let minDiff = Infinity;
+
+    importantDates.forEach(month => {
+      month.dates.forEach(date => {
+        const eventDate = new Date(date.date);
+        const diff = differenceInDays(eventDate, today);
+        if (diff >= 0 && diff < minDiff) {
+          minDiff = diff;
+          nextEvent = { ...date, daysUntil: diff };
+        }
+      });
+    });
+
+    return nextEvent;
+  }, [importantDates]);
 
   return (
     <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
@@ -72,28 +139,36 @@ const IslamicCalendarTab: React.FC = () => {
             </h3>
           </div>
           <p className="text-3xl font-bold text-green-400 mb-2">1446 AH</p>
-          <p className="text-gray-400">July 29, 2024 - July 17, 2025</p>
+          <p className="text-gray-400">{formatDate(new Date(2024, 6, 29))} - {formatDate(new Date(2025, 6, 17))}</p>
         </div>
 
-        <div className="bg-gradient-to-br from-amber-900/30 to-gray-800 rounded-xl p-6">
-          <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <div className={`bg-amber-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
-              <Star className="text-amber-400" size={22} fill="#f59e0b" />
+        {nextHoliday && (
+          <div className="bg-gradient-to-br from-amber-900/30 to-gray-800 rounded-xl p-6">
+            <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`bg-amber-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
+                <Star className="text-amber-400" size={22} fill="#f59e0b" />
+              </div>
+              <h3 className="font-medium text-lg">
+                {t('islamicCalendar.nextHoliday')}
+              </h3>
             </div>
-            <h3 className="font-medium text-lg">
-              {t('islamicCalendar.nextHoliday')}
-            </h3>
+            <div className="space-y-2">
+              <p className="text-xl font-medium text-amber-400">{nextHoliday.name}</p>
+              <p className="text-gray-300">{formatDate(nextHoliday.date)}</p>
+              <p className="text-sm text-amber-300/80">
+                {nextHoliday.daysUntil === 0 
+                  ? t('common.today')
+                  : nextHoliday.daysUntil === 1
+                    ? t('common.tomorrow')
+                    : t('common.inDays', { days: nextHoliday.daysUntil })}
+              </p>
+            </div>
           </div>
-          <div className="space-y-2">
-            <p className="text-xl font-medium text-amber-400">Eid al-Fitr</p>
-            <p className="text-gray-300">March 31, 2025</p>
-            <p className="text-gray-400">1 Shawwal 1446</p>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="bg-gray-800 rounded-xl overflow-hidden">
-        {importantDates.map((monthData, index) => (
+        {importantDates.slice(0, 7).map((monthData, index) => (
           <div key={monthData.month} className={`p-6 ${index !== 0 ? 'border-t border-gray-700' : ''}`}>
             <h3 className="text-xl font-medium mb-4 text-green-400">{monthData.month}</h3>
             <div className="space-y-4">
@@ -104,7 +179,7 @@ const IslamicCalendarTab: React.FC = () => {
                   </div>
                   <div>
                     <p className="font-medium text-lg">{date.name}</p>
-                    <p className="text-gray-400">{date.gregorian}</p>
+                    <p className="text-gray-400">{formatDate(date.date)}</p>
                   </div>
                 </div>
               ))}

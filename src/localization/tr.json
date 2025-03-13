@@ -1,11 +1,13 @@
 {
   "common": {
-    "unknown": "Bilinmiyor"
+    "unknown": "Bilinmiyor",
+    "today": "Bugün",
+    "tomorrow": "Yarın",
+    "inDays": "{days} gün içinde"
   },
   "navigation": {
     "prayerTimes": "Namaz Vakitleri",
     "ramadan": "Ramazan",
-    "islamicCalendar": "İslami Takvim",
     "location": "Konum"
   },
   "prayerTimes": {
@@ -159,22 +161,5 @@
     "back": "Geri",
     "next": "İleri",
     "finish": "Başla"
-  },
-  "islamicCalendar": {
-    "title": "İslami Takvim",
-    "currentYear": "Mevcut Hicri Yıl",
-    "nextHoliday": "Sonraki Bayram",
-    "importantDates": "Önemli Tarihler",
-    "holidays": "İslami Bayramlar",
-    "newYear": "Hicri Yeni Yıl",
-    "ashura": "Aşure Günü",
-    "mawlid": "Mevlid Kandili",
-    "israMiraj": "İsra ve Miraç",
-    "laylatBaraah": "Berat Kandili",
-    "ramadanStart": "Ramazan Başlangıcı",
-    "laylatQadr": "Kadir Gecesi",
-    "eidFitr": "Ramazan Bayramı",
-    "arafah": "Arefe Günü",
-    "eidAdha": "Kurban Bayramı"
   }
 }

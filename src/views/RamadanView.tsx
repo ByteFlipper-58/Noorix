@@ -1,8 +1,13 @@
 import React from 'react';
 import RamadanTab from '../components/RamadanTab';
+import PageTransition from '../components/PageTransition';
 
 const RamadanView: React.FC = () => {
-  return <RamadanTab />;
+  return (
+    <PageTransition>
+      <RamadanTab />
+    </PageTransition>
+  );
 };
 
 export default RamadanView;

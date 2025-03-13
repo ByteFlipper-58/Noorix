@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { AppProvider } from './context/AppContext';
 import Layout from './components/Layout';
 import PrayerTimesView from './views/PrayerTimesView';
@@ -11,7 +12,8 @@ import PrivacyPolicyView from './views/PrivacyPolicyView';
 import UserGuide from './components/UserGuide';
 import { useAppContext } from './context/AppContext';
 
-const AppContent = () => {
+const AnimatedRoutes = () => {
+  const location = useLocation();
   const { isFirstVisit, setIsFirstVisit } = useAppContext();
   const [showUserGuide, setShowUserGuide] = useState(isFirstVisit);
 
@@ -25,10 +27,10 @@ const AppContent = () => {
   };
 
   return (
-    <Router>
-      <Layout>
-        {showUserGuide && <UserGuide onClose={handleCloseGuide} initialStep={0} />}
-        <Routes>
+    <Layout>
+      {showUserGuide && <UserGuide onClose={handleCloseGuide} initialStep={0} />}
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PrayerTimesView />} />
           <Route path="/ramadan" element={<RamadanView />} />
           <Route path="/calendar" element={<IslamicCalendarView />} />
@@ -37,17 +39,19 @@ const AppContent = () => {
           <Route path="/privacy" element={<PrivacyPolicyView />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Layout>
-    </Router>
+      </AnimatePresence>
+    </Layout>
   );
 };
 
 function App() {
   return (
     <AppProvider>
-      <AppContent />
+      <Router>
+        <AnimatedRoutes />
+      </Router>
     </AppProvider>
   );
 }
 
-export default App;
+export default App

@@ -1,8 +1,13 @@
 import React from 'react';
 import IslamicCalendarTab from '../components/IslamicCalendarTab';
+import PageTransition from '../components/PageTransition';
 
 const IslamicCalendarView: React.FC = () => {
-  return <IslamicCalendarTab />;
+  return (
+    <PageTransition>
+      <IslamicCalendarTab />
+    </PageTransition>
+  );
 };
 
 export default IslamicCalendarView;
