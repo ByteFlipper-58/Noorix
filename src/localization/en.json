@@ -46,7 +46,10 @@
     "breakFastWithDates": "Break your fast with dates and water as per Sunnah",
     "planTaraweeh": "Plan your Taraweeh prayers and Quran recitation",
     "duaIftar": "Allahumma inni laka sumtu, wa bika aamantu, wa alayka tawakkaltu, wa ala rizqika aftartu",
-    "duaLaylatAlQadr": "Allahumma innaka afuwwun tuhibbul afwa fa'fu anni"
+    "duaLaylatAlQadr": "Allahumma innaka afuwwun tuhibbul afwa fa'fu anni",
+    "eidMubarak": "Eid Mubarak!",
+    "eidCongratulations": "May Allah accept our fasting, prayers, and good deeds",
+    "acceptedFasting": "Taqabbal Allahu minna wa minkum (May Allah accept it from us and from you)"
   },
   "ramadanTracker": {
     "ramadanTracker": "Ramadan Tracker",
