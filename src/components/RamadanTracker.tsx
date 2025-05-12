@@ -15,7 +15,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
   const { t, isRTL } = useLocalization();
   const [ramadanInfo, setRamadanInfo] = useState({
     isRamadan: false,
-    isEidPeriod: false,
+    isEidPeriod: true,
     startDate: new Date(2025, 2, 1), // March 1, 2025
     endDate: new Date(2025, 2, 30), // March 30, 2025
     currentDay: 0,
