@@ -48,13 +48,13 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
     // Check if we're in Eid period (3 days after Ramadan)
     const isEidPeriod = isWithinInterval(simulatedToday, { start: eidStartDate, end: eidEndDate });
     
-    // Calculate which day of Ramadan it is
-    const daysSinceStart = isRamadan ? differenceInDays(simulatedToday, ramadanInfo.startDate) + 1 : 0;
-    
-    // Calculate days until next Ramadan
+    // Calculate which day of Ramadan it is and days left
+    let daysSinceStart = 0;
     let daysLeft = 0;
+
     if (isRamadan) {
-      // During Ramadan, show days remaining in current Ramadan
+      // During Ramadan, calculate current day and days remaining
+      daysSinceStart = differenceInDays(simulatedToday, ramadanInfo.startDate) + 1;
       daysLeft = differenceInDays(ramadanInfo.endDate, simulatedToday);
     } else if (!isEidPeriod) {
       // After Eid period, calculate days until next Ramadan
