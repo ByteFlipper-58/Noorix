@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { format, differenceInDays, addDays } from 'date-fns';
+import { format, differenceInDays, addDays, isWithinInterval } from 'date-fns';
 import { ar, ru, tr, enUS } from 'date-fns/locale';
-import { Calendar, Sunrise, Sunset, Moon, Star } from 'lucide-react';
+import { Calendar, Sunrise, Sunset, Moon, Star, Gift } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
 import { Language } from '../types';
 
@@ -15,6 +15,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
   const { t, isRTL } = useLocalization();
   const [ramadanInfo, setRamadanInfo] = useState({
     isRamadan: false,
+    isEidPeriod: false,
     startDate: new Date(2025, 2, 1), // March 1, 2025
     endDate: new Date(2025, 2, 30), // March 30, 2025
     currentDay: 0,
@@ -37,21 +38,36 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
     // For demonstration purposes, we'll simulate that Ramadan is happening now
     const simulatedToday = new Date(2025, 2, today.getDate() > 30 ? 30 : today.getDate());
     
+    // Calculate Eid period (3 days after Ramadan)
+    const eidStartDate = addDays(ramadanInfo.endDate, 1);
+    const eidEndDate = addDays(ramadanInfo.endDate, 3);
+    
     // Check if we're in Ramadan period
     const isRamadan = simulatedToday >= ramadanInfo.startDate && simulatedToday <= ramadanInfo.endDate;
+    
+    // Check if we're in Eid period (3 days after Ramadan)
+    const isEidPeriod = isWithinInterval(simulatedToday, { start: eidStartDate, end: eidEndDate });
     
     // Calculate which day of Ramadan it is
     const daysSinceStart = isRamadan ? differenceInDays(simulatedToday, ramadanInfo.startDate) + 1 : 0;
     
-    // Calculate days left in Ramadan
-    const daysLeft = isRamadan ? differenceInDays(ramadanInfo.endDate, simulatedToday) : 
-                     (simulatedToday < ramadanInfo.startDate ? differenceInDays(ramadanInfo.startDate, simulatedToday) : 0);
+    // Calculate days until next Ramadan
+    let daysLeft = 0;
+    if (isRamadan) {
+      // During Ramadan, show days remaining in current Ramadan
+      daysLeft = differenceInDays(ramadanInfo.endDate, simulatedToday);
+    } else if (!isEidPeriod) {
+      // After Eid period, calculate days until next Ramadan
+      const nextRamadanStart = new Date(2026, 1, 19); // February 19, 2026
+      daysLeft = differenceInDays(nextRamadanStart, simulatedToday);
+    }
     
     setRamadanInfo(prev => ({
       ...prev,
       isRamadan,
+      isEidPeriod,
       currentDay: daysSinceStart,
-      daysLeft: isRamadan ? daysLeft : daysLeft,
+      daysLeft: daysLeft,
     }));
   }, []);
   
@@ -77,6 +93,112 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
     }
     
     return format(date, 'dd MMMM yyyy', { locale });
+  };
+
+  const renderContent = () => {
+    if (ramadanInfo.isRamadan) {
+      return (
+        <>
+          <div className="mb-5">
+            <p className="text-2xl font-medium text-green-300">
+              {t('ramadanTracker.dayOfRamadan', { day: ramadanInfo.currentDay })}
+            </p>
+            <p className="text-gray-400">
+              {t('ramadanTracker.daysRemaining', { days: ramadanInfo.daysLeft })}
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="bg-gray-800/50 rounded-lg p-3 md:p-4">
+              <div className={`flex items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <Sunrise className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
+                <p className="text-sm text-gray-400">
+                  {t('ramadanTracker.suhoorEnds')}
+                </p>
+              </div>
+              <p className="font-medium text-lg">{suhoorTime}</p>
+            </div>
+            
+            <div className="bg-gray-800/50 rounded-lg p-3 md:p-4">
+              <div className={`flex items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <Sunset className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
+                <p className="text-sm text-gray-400">
+                  {t('ramadanTracker.iftarBegins')}
+                </p>
+              </div>
+              <p className="font-medium text-lg">{iftarTime}</p>
+            </div>
+          </div>
+          
+          {/* Progress bar */}
+          <div className="w-full bg-gray-700/50 rounded-full h-3 mb-2">
+            <div 
+              className="bg-gradient-to-r from-green-500 to-green-400 h-3 rounded-full" 
+              style={{ width: `${(ramadanInfo.currentDay / ramadanInfo.totalDays) * 100}%` }}
+            ></div>
+          </div>
+          <p className="text-xs text-gray-500 text-right">
+            {Math.round((ramadanInfo.currentDay / ramadanInfo.totalDays) * 100)}%
+          </p>
+        </>
+      );
+    }
+    
+    if (ramadanInfo.isEidPeriod) {
+      return (
+        <div className="py-4">
+          <div className="flex justify-center mb-5">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <Gift className="text-amber-400" size={32} />
+              </div>
+            </div>
+          </div>
+          
+          <h3 className="text-2xl font-medium text-center text-amber-400 mb-3">
+            {t('ramadan.eidMubarak')}
+          </h3>
+          
+          <p className="text-center text-gray-300 mb-4">
+            {t('ramadan.eidCongratulations')}
+          </p>
+          
+          <div className="bg-gray-800/40 rounded-lg p-4">
+            <div className="text-center text-gray-400">
+              {t('ramadan.acceptedFasting')}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="py-4">
+        <div className="flex justify-center mb-5">
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full bg-green-900/30 flex items-center justify-center">
+              <Calendar className="text-green-400" size={32} />
+            </div>
+            <div className="absolute -top-2 -right-2 bg-amber-500/90 text-white text-sm font-bold rounded-full w-10 h-10 flex items-center justify-center">
+              {ramadanInfo.daysLeft}
+            </div>
+          </div>
+        </div>
+        
+        <p className="text-center text-xl font-medium mb-3">
+          {t('ramadanTracker.daysUntilRamadan', { days: ramadanInfo.daysLeft })}
+        </p>
+        
+        <div className="bg-gray-800/40 rounded-lg p-4 mt-4">
+          <div className={`flex items-center justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Calendar className={`text-green-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
+            <p className="text-gray-300 text-sm">
+              {t('ramadanTracker.beginsOn', { date: formatDate(new Date(2026, 1, 19)) })}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   };
   
   return (
@@ -105,91 +227,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
         
         {/* Content */}
         <div className="p-4 md:p-6 pt-2">
-          {ramadanInfo.isRamadan ? (
-            <>
-              <div className="mb-5">
-                <p className="text-2xl font-medium text-green-300">
-                  {t('ramadanTracker.dayOfRamadan', { day: ramadanInfo.currentDay })}
-                </p>
-                <p className="text-gray-400">
-                  {t('ramadanTracker.daysRemaining', { days: ramadanInfo.daysLeft })}
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3 mb-5">
-                <div className="bg-gray-800/50 rounded-lg p-3 md:p-4">
-                  <div className={`flex items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <Sunrise className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
-                    <p className="text-sm text-gray-400">
-                      {t('ramadanTracker.suhoorEnds')}
-                    </p>
-                  </div>
-                  <p className="font-medium text-lg">{suhoorTime}</p>
-                </div>
-                
-                <div className="bg-gray-800/50 rounded-lg p-3 md:p-4">
-                  <div className={`flex items-center mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <Sunset className={`text-amber-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
-                    <p className="text-sm text-gray-400">
-                      {t('ramadanTracker.iftarBegins')}
-                    </p>
-                  </div>
-                  <p className="font-medium text-lg">{iftarTime}</p>
-                </div>
-              </div>
-              
-              {/* Progress bar */}
-              <div className="w-full bg-gray-700/50 rounded-full h-3 mb-2">
-                <div 
-                  className="bg-gradient-to-r from-green-500 to-green-400 h-3 rounded-full" 
-                  style={{ width: `${(ramadanInfo.currentDay / ramadanInfo.totalDays) * 100}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-gray-500 text-right">
-                {Math.round((ramadanInfo.currentDay / ramadanInfo.totalDays) * 100)}%
-              </p>
-            </>
-          ) : (
-            <div className="py-4">
-              {ramadanInfo.daysLeft > 0 ? (
-                <>
-                  <div className="flex justify-center mb-5">
-                    <div className="relative">
-                      <div className="w-24 h-24 rounded-full bg-green-900/30 flex items-center justify-center">
-                        <Calendar className="text-green-400" size={32} />
-                      </div>
-                      <div className="absolute -top-2 -right-2 bg-amber-500/90 text-white text-sm font-bold rounded-full w-10 h-10 flex items-center justify-center">
-                        {ramadanInfo.daysLeft}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <p className="text-center text-xl font-medium mb-3">
-                    {t('ramadanTracker.daysUntilRamadan', { days: ramadanInfo.daysLeft })}
-                  </p>
-                  
-                  <div className="bg-gray-800/40 rounded-lg p-4 mt-4">
-                    <div className={`flex items-center justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-                      <Calendar className={`text-green-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
-                      <p className="text-gray-300 text-sm">
-                        {t('ramadanTracker.beginsOn', { date: formatDate(ramadanInfo.startDate) })}
-                      </p>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-5">
-                  <Moon className="mx-auto text-gray-400 mb-4" size={36} />
-                  <p className="text-xl font-medium">
-                    {t('ramadanTracker.ramadanHasEnded')}
-                  </p>
-                  <p className="text-sm text-gray-400 mt-2">
-                    {t('ramadanTracker.seeYouNextYear')}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+          {renderContent()}
         </div>
       </div>
     </div>
