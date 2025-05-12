@@ -46,7 +46,10 @@
     "breakFastWithDates": "افطر على التمر والماء اتباعًا للسنة",
     "planTaraweeh": "خطط لصلاة التراويح وتلاوة القرآن",
     "duaIftar": "اللهم إني لك صمت، وبك آمنت، وعليك توكلت، وعلى رزقك أفطرت",
-    "duaLaylatAlQadr": "اللهم إنك عفو تحب العفو فاعف عني"
+    "duaLaylatAlQadr": "اللهم إنك عفو تحب العفو فاعف عني",
+    "eidMubarak": "عيد مبارك!",
+    "eidCongratulations": "تقبل الله صيامنا وصلاتنا وأعمالنا الصالحة",
+    "acceptedFasting": "تقبل الله منا ومنكم"
   },
   "ramadanTracker": {
     "ramadanTracker": "متتبع رمضان",

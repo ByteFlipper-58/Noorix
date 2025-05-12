@@ -45,7 +45,10 @@
     "breakFastWithDates": "Sünnete uygun olarak orucunuzu hurma ve su ile açın",
     "planTaraweeh": "Teravih namazlarınızı ve Kur'an okumanızı planlayın",
     "duaIftar": "Allahümme leke sumtü ve bike amentü ve aleyke tevekkeltü ve alâ rızkıke eftartü",
-    "duaLaylatAlQadr": "Allahümme inneke afüvvün tühibbül afve fa'fü annî"
+    "duaLaylatAlQadr": "Allahümme inneke afüvvün tühibbül afve fa'fü annî",
+    "eidMubarak": "Bayramınız mübarek olsun!",
+    "eidCongratulations": "Allah orucumuzu, dualarımızı ve iyi amellerimizi kabul etsin",
+    "acceptedFasting": "Tekabbel Allahu minna ve minküm (Allah bizden ve sizden kabul etsin)"
   },
   "ramadanTracker": {
     "ramadanTracker": "Ramazan Takipçisi",
