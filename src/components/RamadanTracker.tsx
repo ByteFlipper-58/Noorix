@@ -16,8 +16,8 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
   const [ramadanInfo, setRamadanInfo] = useState({
     isRamadan: false,
     isEidPeriod: true,
-    startDate: new Date(2025, 2, 1), // March 1, 2025
-    endDate: new Date(2025, 2, 30), // March 30, 2025
+    startDate: new Date(2026, 2, 16), // March 1, 2025
+    endDate: new Date(2025, 3, 19), // March 30, 2025
     currentDay: 0,
     daysLeft: 0,
     totalDays: 30,
