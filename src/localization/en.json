@@ -3,13 +3,19 @@
     "unknown": "Unknown",
     "today": "Today",
     "tomorrow": "Tomorrow",
-    "inDays": "In {days} days"
+    "inDays": "In {days} days",
+    "now": "Now",
+    "closeGuide": "Close guide",
+    "km": "km"
   },
   "navigation": {
     "prayerTimes": "Prayer Times",
     "ramadan": "Ramadan",
     "islamicCalendar": "Islamic Calendar",
-    "location": "Location"
+    "location": "Location",
+    "qibla": "Qibla",
+    "tasbih": "Tasbih",
+    "more": "More"
   },
   "prayerTimes": {
     "noLocationSelected": "No Location Selected",
@@ -60,7 +66,8 @@
     "daysUntilRamadan": "{days} days until Ramadan",
     "beginsOn": "Begins on {date}",
     "ramadanHasEnded": "Ramadan has ended",
-    "seeYouNextYear": "See you next year, in sha Allah"
+    "seeYouNextYear": "See you next year, in sha Allah",
+    "progress": "Progress"
   },
   "location": {
     "locationSettings": "Location Settings",
@@ -72,7 +79,11 @@
     "searchCities": "Search cities...",
     "notFoundInCityList": "\"{query}\" not found in our city list. Please use \"Detect My Location\" instead.",
     "geolocationNotSupported": "Geolocation is not supported by your browser",
-    "errorGettingLocation": "Error getting location: {message}"
+    "errorGettingLocation": "Error getting location: {message}",
+    "description": "Select location for prayer time calculation",
+    "detecting": "Detecting...",
+    "detectDescription": "Use GPS for detection",
+    "tryDetect": "Try to detect your location automatically"
   },
   "settings": {
     "settings": "Settings",
@@ -92,7 +103,8 @@
     "privacyPolicy": "Privacy Policy",
     "learnHow": "Learn how we handle your data",
     "developer": "Developer",
-    "developedBy": "Developed by"
+    "developedBy": "Developed by",
+    "customizeApp": "Customize the app to your needs"
   },
   "privacy": {
     "backToSettings": "Back to Settings",
@@ -182,5 +194,37 @@
     "eidFitr": "Eid al-Fitr",
     "arafah": "Day of Arafah",
     "eidAdha": "Eid al-Adha"
+  },
+  "qibla": {
+    "title": "Qibla Direction",
+    "direction": "Qibla Direction",
+    "degrees": "{deg}°",
+    "fromNorth": "from North",
+    "compass": "Compass",
+    "yourLocation": "Your location",
+    "meccaDirection": "Direction to Mecca",
+    "enableCompass": "Enable Compass",
+    "compassNotSupported": "Compass is not supported on this device",
+    "needLocation": "Set your location to see Qibla direction",
+    "calibrate": "Please wave your device in a figure-8 motion to calibrate compass",
+    "currentHeading": "Facing",
+    "qiblaDirection": "Qibla at"
+  },
+  "tasbih": {
+    "title": "Tasbih Counter",
+    "counter": "Counter",
+    "reset": "Reset",
+    "target": "Target",
+    "completed": "Completed!",
+    "subhanAllah": "SubhanAllah",
+    "alhamdulillah": "Alhamdulillah",
+    "allahuAkbar": "Allahu Akbar",
+    "custom": "Custom",
+    "tapToCount": "Tap to count",
+    "round": "Round {n}"
+  },
+  "ayah": {
+    "title": "Ayah of the Day",
+    "source": "Quran"
   }
 }

@@ -2,13 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { formatTime, getNextPrayer, scheduleNotification } from '../services/prayerTimeService';
-import { Clock, AlertCircle, MapPin, MoveRight } from 'lucide-react';
+import { Clock, AlertCircle, MapPin, MoveRight, Sun, Sunrise, Sunset, Moon, CloudSun } from 'lucide-react';
 import { NextPrayer } from '../types';
 import { getMoonPhaseEmoji, getMoonPhaseName } from '../data/cities';
 import IftarTimer from './IftarTimer';
 import { getPrayerNameTranslation } from '../services/languageService';
 import useLocalization from '../hooks/useLocalization';
 import { logAnalyticsEvent } from '../firebase/firebase';
+
+// Prayer icon map
+const prayerIcons: Record<string, React.ReactNode> = {
+  Fajr: <Sunrise size={18} className="text-indigo-400" />,
+  Sunrise: <Sun size={18} className="text-amber-400" />,
+  Dhuhr: <Sun size={18} className="text-yellow-400" />,
+  Asr: <CloudSun size={18} className="text-orange-400" />,
+  Maghrib: <Sunset size={18} className="text-rose-400" />,
+  Isha: <Moon size={18} className="text-blue-400" />,
+};
+
+const prayerIconColors: Record<string, string> = {
+  Fajr: 'from-indigo-500/20 to-indigo-600/10',
+  Sunrise: 'from-amber-500/20 to-amber-600/10',
+  Dhuhr: 'from-yellow-500/20 to-yellow-600/10',
+  Asr: 'from-orange-500/20 to-orange-600/10',
+  Maghrib: 'from-rose-500/20 to-rose-600/10',
+  Isha: 'from-blue-500/20 to-blue-600/10',
+};
 
 const PrayerTimesTab: React.FC = () => {
   const { prayerTimes, loading, error, settings, location } = useAppContext();
@@ -17,49 +36,43 @@ const PrayerTimesTab: React.FC = () => {
   const [nextPrayer, setNextPrayer] = useState<NextPrayer | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [moonPhase, setMoonPhase] = useState<number>(0);
-  
+
   useEffect(() => {
-    // Update current time every minute
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
-    
+
     return () => clearInterval(timer);
   }, []);
-  
+
   useEffect(() => {
-    // Calculate moon phase
     const calculateMoonPhase = () => {
       const date = new Date();
       const year = date.getFullYear();
       const month = date.getMonth() + 1;
       const day = date.getDate();
-      
-      // Calculate approximate moon phase using a simple algorithm
-      // 29.53 days is the average length of a lunar month
-      const lp = 2551443; // Moon phase cycle in seconds
+
+      const lp = 2551443;
       const now = new Date(year, month - 1, day, 20, 35, 0).getTime() / 1000;
       const newMoon = new Date(2000, 0, 6, 18, 14, 0).getTime() / 1000;
       const phase = ((now - newMoon) % lp) / lp;
-      
+
       setMoonPhase(phase);
     };
-    
+
     calculateMoonPhase();
   }, []);
-  
+
   useEffect(() => {
     if (prayerTimes && prayerTimes.timings) {
       try {
         const next = getNextPrayer(prayerTimes);
         setNextPrayer(next);
-        
-        // Schedule notification for next prayer if enabled
+
         if (settings.notifications) {
           void scheduleNotification(next.name, next.time);
         }
 
-        // Log next prayer to analytics
         logAnalyticsEvent('next_prayer_calculated', {
           prayerName: next.name,
           countdown: next.countdown
@@ -72,59 +85,63 @@ const PrayerTimesTab: React.FC = () => {
       }
     }
   }, [prayerTimes, currentTime, settings.notifications]);
-  
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-      </div>
-    );
-  }
-  
-  if (error) {
-    return (
-      <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 text-red-400">
-        <div className="flex items-center">
-          <AlertCircle className={`${isRTL ? 'ml-2' : 'mr-2'}`} size={20} />
-          <p>{error}</p>
+        <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center animate-pulse">
+          <Moon className="text-emerald-400" size={24} />
         </div>
       </div>
     );
   }
-  
+
+  if (error) {
+    return (
+      <div className="glass-card rounded-2xl p-5 border-red-800/20 bg-red-900/10">
+        <div className="flex items-center text-red-400">
+          <AlertCircle className={`${isRTL ? 'ml-3' : 'mr-3'} flex-shrink-0`} size={20} />
+          <p className="text-sm">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!prayerTimes || !location) {
     return (
-      <div className="text-center py-10">
-        <MapPin className="mx-auto mb-4 text-gray-400" size={48} />
-        <h2 className="text-xl font-semibold mb-2">
+      <div className="text-center py-12 max-w-md mx-auto">
+        <div className="w-20 h-20 mx-auto mb-5 rounded-3xl bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 flex items-center justify-center border border-emerald-500/10">
+          <MapPin className="text-emerald-400" size={32} />
+        </div>
+        <h2 className="text-xl font-semibold mb-2 text-gray-100">
           {t('prayerTimes.noLocationSelected')}
         </h2>
-        <p className="text-gray-400 mb-6">
+        <p className="text-gray-500 text-sm mb-6">
           {t('prayerTimes.pleaseSetLocation')}
         </p>
-        <button 
+        <button
           onClick={() => {
             navigate('/location');
             logAnalyticsEvent('navigation', { from: 'prayer_times', to: 'location', reason: 'no_location' });
           }}
-          className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors flex items-center mx-auto"
+          className="inline-flex items-center bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white py-3 px-6 rounded-2xl transition-all duration-300 shadow-glow-sm hover:shadow-glow-md font-medium text-sm"
         >
-          <MapPin size={18} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />
+          <MapPin size={16} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />
           {t('prayerTimes.goToLocationSettings')}
-          <MoveRight size={18} className={`${isRTL ? 'mr-2' : 'ml-2'}`} />
+          <MoveRight size={16} className={`${isRTL ? 'mr-2' : 'ml-2'}`} />
         </button>
       </div>
     );
   }
-  
+
   const formatPrayerTime = (time: string) => {
     return formatTime(time, settings.timeFormat);
   };
-  
+
   const today = new Date();
   const formattedDate = today.toLocaleDateString(
-    settings.language === 'en' ? 'en-US' : 
-    settings.language === 'ru' ? 'ru-RU' : 'ar-SA', 
+    settings.language === 'en' ? 'en-US' :
+      settings.language === 'ru' ? 'ru-RU' : 'ar-SA',
     {
       weekday: 'long',
       year: 'numeric',
@@ -132,190 +149,164 @@ const PrayerTimesTab: React.FC = () => {
       day: 'numeric'
     }
   );
-  
-  // Safely access Hijri date
+
   const hijriDate = prayerTimes.date?.hijri;
-  const formattedHijriDate = hijriDate 
-    ? `${hijriDate.day} ${settings.language === 'ar' ? hijriDate.month.ar : hijriDate.month.en} ${hijriDate.year} ${
-        settings.language === 'en' ? 'AH' : 
-        settings.language === 'ru' ? 'г.х.' : 'هـ'
-      }`
+  const formattedHijriDate = hijriDate
+    ? `${hijriDate.day} ${settings.language === 'ar' ? hijriDate.month.ar : hijriDate.month.en} ${hijriDate.year} ${settings.language === 'en' ? 'AH' :
+      settings.language === 'ru' ? 'г.х.' : 'هـ'
+    }`
     : '';
-  
+
   const moonEmoji = getMoonPhaseEmoji(moonPhase);
   const phaseName = getMoonPhaseName(moonPhase, settings.language);
-  
-  // Prayer rakats information
-  const prayerRakats = {
+
+  const prayerRakats: Record<string, number> = {
     Fajr: 2,
     Dhuhr: 4,
     Asr: 4,
     Maghrib: 3,
     Isha: 4
   };
-  
+
+  const prayers = [
+    { key: 'Fajr', time: prayerTimes.timings?.Fajr },
+    { key: 'Sunrise', time: prayerTimes.timings?.Sunrise, isInfo: true },
+    { key: 'Dhuhr', time: prayerTimes.timings?.Dhuhr },
+    { key: 'Asr', time: prayerTimes.timings?.Asr },
+    { key: 'Maghrib', time: prayerTimes.timings?.Maghrib, isIftar: true },
+    { key: 'Isha', time: prayerTimes.timings?.Isha },
+  ];
+
   return (
-    <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
+    <div className={`${isRTL ? 'text-right' : ''}`}>
+      {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold mb-1">{formattedDate}</h2>
-        {formattedHijriDate && <p className="text-gray-400">{formattedHijriDate}</p>}
-        <p className="text-sm mt-1">
-          {location.city ? `${location.city}, ${location.country}` : t('prayerTimes.currentLocation')}
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {nextPrayer && nextPrayer.name !== 'Unknown' && (
-          <div className="bg-green-900/20 border border-green-800 rounded-xl p-4 h-full">
-            <h3 className="text-lg font-medium text-green-400 mb-2">
-              {t('prayerTimes.nextPrayer')}
-            </h3>
-            <div className="flex flex-col">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-2xl font-bold text-green-300">{getPrayerNameTranslation(nextPrayer.name, settings.language)}</p>
-                  <p className="text-green-400">{formatPrayerTime(nextPrayer.time)}</p>
-                </div>
-                <div className="bg-gray-800 px-3 py-2 rounded-lg shadow-sm">
-                  <div className="flex items-center text-green-400">
-                    <Clock size={16} className={`${isRTL ? 'ml-1' : 'mr-1'}`} />
-                    <span className="font-medium">{nextPrayer.countdown}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Iftar Timer */}
-        <IftarTimer className="h-full" />
-      </div>
-      
-      <div className="bg-gray-800 rounded-xl shadow-sm overflow-hidden mb-6">
-        <div className="divide-y divide-gray-700">
-          {prayerTimes.timings && (
+        <h2 className="text-2xl font-semibold text-gray-100">{formattedDate}</h2>
+        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mt-1">
+          {formattedHijriDate && <p className="text-gray-400 text-sm">{formattedHijriDate}</p>}
+          {location.city && (
             <>
-              <PrayerTimeRow 
-                name={getPrayerNameTranslation('Fajr', settings.language)} 
-                time={formatPrayerTime(prayerTimes.timings.Fajr)} 
-                isNext={nextPrayer?.name === 'Fajr'} 
-                isRTL={isRTL}
-                rakats={prayerRakats.Fajr}
-                rakatLabel={t('prayerTimes.rakats')}
-              />
-              <PrayerTimeRow 
-                name={getPrayerNameTranslation('Sunrise', settings.language)} 
-                time={formatPrayerTime(prayerTimes.timings.Sunrise)} 
-                isInfo 
-                isRTL={isRTL}
-              />
-              <PrayerTimeRow 
-                name={getPrayerNameTranslation('Dhuhr', settings.language)} 
-                time={formatPrayerTime(prayerTimes.timings.Dhuhr)} 
-                isNext={nextPrayer?.name === 'Dhuhr'} 
-                isRTL={isRTL}
-                rakats={prayerRakats.Dhuhr}
-                rakatLabel={t('prayerTimes.rakats')}
-              />
-              <PrayerTimeRow 
-                name={getPrayerNameTranslation('Asr', settings.language)} 
-                time={formatPrayerTime(prayerTimes.timings.Asr)} 
-                isNext={nextPrayer?.name === 'Asr'} 
-                isRTL={isRTL}
-                rakats={prayerRakats.Asr}
-                rakatLabel={t('prayerTimes.rakats')}
-              />
-              <PrayerTimeRow 
-                name={getPrayerNameTranslation('Maghrib', settings.language)} 
-                time={formatPrayerTime(prayerTimes.timings.Maghrib)} 
-                isNext={nextPrayer?.name === 'Maghrib'} 
-                isIftar 
-                iftarLabel={t('prayerTimes.iftar')} 
-                isRTL={isRTL}
-                rakats={prayerRakats.Maghrib}
-                rakatLabel={t('prayerTimes.rakats')}
-              />
-              <PrayerTimeRow 
-                name={getPrayerNameTranslation('Isha', settings.language)} 
-                time={formatPrayerTime(prayerTimes.timings.Isha)} 
-                isNext={nextPrayer?.name === 'Isha'} 
-                isRTL={isRTL}
-                rakats={prayerRakats.Isha}
-                rakatLabel={t('prayerTimes.rakats')}
-              />
+              <span className="text-gray-700 hidden sm:inline">·</span>
+              <p className="text-sm text-gray-500 flex items-center">
+                <MapPin size={12} className={`${isRTL ? 'ml-1' : 'mr-1'} text-emerald-500/50`} />
+                {location.city}, {location.country}
+              </p>
             </>
           )}
         </div>
       </div>
-      
-      {/* Moon Phase */}
-      <div className="bg-gray-800/50 rounded-xl p-4 flex items-center">
-        <div className="text-4xl mr-3">{moonEmoji}</div>
-        <div>
-          <h3 className="font-medium text-gray-300">
-            {t('prayerTimes.currentMoonPhase')}
-          </h3>
-          <p className="text-gray-400">{phaseName}</p>
+
+      {/* ═══════════ NEXT PRAYER + IFTAR ═══════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+        {nextPrayer && nextPrayer.name !== 'Unknown' && (
+          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
+            {/* Gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/15 to-transparent" />
+            <div className="absolute top-0 right-0 w-28 h-28 bg-emerald-500/[0.04] rounded-full -mr-12 -mt-12 blur-2xl" />
+
+            <div className="relative">
+              <div className="flex items-center mb-3">
+                <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${prayerIconColors[nextPrayer.name] || 'from-emerald-500/20 to-emerald-600/10'} flex items-center justify-center flex-shrink-0`}>
+                  {prayerIcons[nextPrayer.name] || <Clock size={16} className="text-emerald-400" />}
+                </div>
+                <p className={`text-xs uppercase tracking-wider font-medium text-emerald-400/70 ${isRTL ? 'mr-2' : 'ml-2'}`}>
+                  {t('prayerTimes.nextPrayer')}
+                </p>
+              </div>
+
+              <p className="text-2xl font-bold text-emerald-300 mb-0.5">
+                {getPrayerNameTranslation(nextPrayer.name, settings.language)}
+              </p>
+              <p className="text-sm text-emerald-400/60 tabular-nums">{formatPrayerTime(nextPrayer.time)}</p>
+
+              {/* Countdown chip */}
+              <div className="mt-3">
+                <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                  <Clock size={11} className={`${isRTL ? 'ml-1' : 'mr-1'}`} />
+                  <span className="tabular-nums">{nextPrayer.countdown}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Iftar Timer */}
+        <IftarTimer className="h-full" />
+      </div>
+
+      {/* ═══════════ PRAYER LIST ═══════════ */}
+      <div className="glass-card rounded-2xl overflow-hidden mb-4">
+        <div className="divide-y divide-white/[0.04]">
+          {prayers.map((prayer) => {
+            if (!prayer.time) return null;
+            const isNext = nextPrayer?.name === prayer.key;
+            const rakats = prayerRakats[prayer.key];
+
+            return (
+              <div
+                key={prayer.key}
+                className={`
+                  flex items-center px-4 py-3.5 transition-all duration-200
+                  ${isNext ? 'bg-emerald-500/[0.06]' : 'hover:bg-white/[0.02]'}
+                  ${prayer.isInfo ? 'opacity-60' : ''}
+                `}
+              >
+                {/* Icon */}
+                <div className={`
+                  w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300
+                  ${isNext
+                    ? `bg-gradient-to-br ${prayerIconColors[prayer.key] || 'from-emerald-500/20 to-emerald-600/10'} shadow-glow-sm`
+                    : 'bg-white/[0.03]'}
+                `}>
+                  {prayerIcons[prayer.key] || <Clock size={16} className="text-gray-500" />}
+                </div>
+
+                {/* Name + badges */}
+                <div className={`flex-1 min-w-0 ${isRTL ? 'mr-3' : 'ml-3'}`}>
+                  <div className="flex items-center flex-wrap gap-1.5">
+                    <span className={`font-medium text-sm ${isNext ? 'text-emerald-400' : prayer.isInfo ? 'text-gray-500' : 'text-gray-200'}`}>
+                      {getPrayerNameTranslation(prayer.key, settings.language)}
+                    </span>
+
+                    {prayer.isIftar && (
+                      <span className="px-1.5 py-0.5 bg-amber-500/10 text-amber-400 text-[10px] rounded-full font-medium">
+                        {t('prayerTimes.iftar')}
+                      </span>
+                    )}
+
+                    {rakats !== undefined && (
+                      <span className="px-1.5 py-0.5 bg-white/[0.04] text-gray-500 text-[10px] rounded-full font-medium">
+                        {rakats} {t('prayerTimes.rakats')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Time */}
+                <span className={`
+                  text-sm flex-shrink-0 tabular-nums
+                  ${isNext ? 'text-emerald-400 font-semibold' : prayer.isInfo ? 'text-gray-600' : 'text-gray-300'}
+                `}>
+                  {formatPrayerTime(prayer.time)}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
-    </div>
-  );
-};
 
-interface PrayerTimeRowProps {
-  name: string;
-  time: string;
-  isNext?: boolean;
-  isInfo?: boolean;
-  isIftar?: boolean;
-  iftarLabel?: string;
-  isRTL?: boolean;
-  rakats?: number;
-  rakatLabel?: string;
-}
-
-const PrayerTimeRow: React.FC<PrayerTimeRowProps> = ({ 
-  name, 
-  time, 
-  isNext, 
-  isInfo, 
-  isIftar, 
-  iftarLabel = 'Iftar',
-  isRTL = false,
-  rakats,
-  rakatLabel = 'rakats'
-}) => {
-  return (
-    <div className={`
-      flex items-center p-4
-      ${isNext ? 'bg-green-900/20' : ''}
-      ${isInfo ? 'bg-gray-700/30 text-gray-400' : ''}
-    `}>
-      <span className={`
-        font-medium ${isRTL ? 'ml-2' : 'mr-2'}
-        ${isNext ? 'text-green-400' : ''}
-      `}>
-        {name}
-      </span>
-      
-      {isIftar && (
-        <span className={`px-2 py-0.5 bg-amber-900/30 text-amber-400 text-xs rounded-full mx-2 flex items-center`}>
-          {iftarLabel}
-        </span>
-      )}
-      
-      {rakats !== undefined && (
-        <span className={`px-2 py-0.5 bg-blue-900/30 text-blue-400 text-xs rounded-full mx-2 flex items-center`}>
-          {rakats} {rakatLabel}
-        </span>
-      )}
-      
-      <span className={`
-        ${isRTL ? 'mr-auto' : 'ml-auto'}
-        ${isNext ? 'text-green-400 font-medium' : ''}
-      `}>
-        {time}
-      </span>
+      {/* ═══════════ MOON PHASE ═══════════ */}
+      <div className="glass-card rounded-2xl p-4 flex items-center">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/15 to-indigo-600/5 flex items-center justify-center flex-shrink-0 text-2xl">
+          {moonEmoji}
+        </div>
+        <div className={`${isRTL ? 'mr-3' : 'ml-3'}`}>
+          <p className="font-medium text-sm text-gray-300">
+            {t('prayerTimes.currentMoonPhase')}
+          </p>
+          <p className="text-xs text-gray-500 mt-0.5">{phaseName}</p>
+        </div>
+      </div>
     </div>
   );
 };

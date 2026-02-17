@@ -3,13 +3,19 @@
     "unknown": "Билгесез",
     "today": "Бүген",
     "tomorrow": "Иртәгә",
-    "inDays": "{days} көннән"
+    "inDays": "{days} көннән",
+    "now": "Хәзер",
+    "closeGuide": "Кулланманы ябу",
+    "km": "км"
   },
   "navigation": {
     "prayerTimes": "Намаз вакытлары",
     "ramadan": "Рамазан",
     "islamicCalendar": "Ислам календаре",
-    "location": "Урын"
+    "location": "Урын",
+    "qibla": "Кыйбла",
+    "tasbih": "Тасбих",
+    "more": "Тагын"
   },
   "prayerTimes": {
     "noLocationSelected": "Урын сайланмаган",
@@ -60,7 +66,8 @@
     "daysUntilRamadan": "Рамазанга {days} көн калды",
     "beginsOn": "{date} башлана",
     "ramadanHasEnded": "Рамазан тәмамланды",
-    "seeYouNextYear": "Иншә Аллаһ, киләсе елда күрешербез"
+    "seeYouNextYear": "Иншә Аллаһ, киләсе елда күрешербез",
+    "progress": "Прогресс"
   },
   "location": {
     "locationSettings": "Урын көйләүләре",
@@ -72,7 +79,11 @@
     "searchCities": "Шәһәрләрне эзләү...",
     "notFoundInCityList": "\"{query}\" безнең шәһәрләр исемлегендә табылмады. Зинһар, \"Минем урынны билгеләү\" кулланыгыз.",
     "geolocationNotSupported": "Геолокация браузерыгыз тарафыннан хуплана алмый",
-    "errorGettingLocation": "Урынны алуда хата: {message}"
+    "errorGettingLocation": "Урынны алуда хата: {message}",
+    "description": "Намаз вакытын исәпләү өчен урынны сайлагыз",
+    "detecting": "Билгелибез...",
+    "detectDescription": "Билгеләү өчен GPS кулланыгыз",
+    "tryDetect": "Урыныгызны автоматик билгеләргә тырышыгыз"
   },
   "settings": {
     "settings": "Көйләүләр",
@@ -92,7 +103,8 @@
     "privacyPolicy": "Хосусыйлык сәясәте",
     "learnHow": "Мәгълүматларыгызны ничек эшкәртүебезне белегез",
     "developer": "Эшләүче",
-    "developedBy": "Эшләүче"
+    "developedBy": "Эшләүче",
+    "customizeApp": "Кушымтаны үзегезгә туры китерегез"
   },
   "privacy": {
     "backToSettings": "Көйләүләргә кире кайту",
@@ -182,5 +194,37 @@
     "eidFitr": "Гайдел-Фитыр",
     "arafah": "Арафа көне",
     "eidAdha": "Гайдел-Әдха"
+  },
+  "qibla": {
+    "title": "Кыйбла юнәлеше",
+    "direction": "Кыйбла юнәлеше",
+    "degrees": "{deg}°",
+    "fromNorth": "Төньяктан",
+    "compass": "Компас",
+    "yourLocation": "Сезнең урыныгыз",
+    "meccaDirection": "Мәккә юнәлеше",
+    "enableCompass": "Компасны кабызу",
+    "compassNotSupported": "Компас эшләми",
+    "needLocation": "Урыныгызны күрсәтегез",
+    "calibrate": "Компасны калибрлау өчен җайланмагыз белән \"сигезле\" ясагыз",
+    "currentHeading": "Юнәлеш",
+    "qiblaDirection": "Кыйбла юнәлеше"
+  },
+  "tasbih": {
+    "title": "Тасбих санагычы",
+    "counter": "Санагыч",
+    "reset": "Ташлау",
+    "target": "Максат",
+    "completed": "Тәмам!",
+    "subhanAllah": "СубханАллах",
+    "alhamdulillah": "Әлхәмдүлилләх",
+    "allahuAkbar": "Аллаху Әкбәр",
+    "custom": "Үзеңнең",
+    "tapToCount": "Санау өчен басыгыз",
+    "round": "Раунд {n}"
+  },
+  "ayah": {
+    "title": "Көн аяте",
+    "source": "Коръән"
   }
 }

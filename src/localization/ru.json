@@ -3,13 +3,19 @@
     "unknown": "Неизвестно",
     "today": "Сегодня",
     "tomorrow": "Завтра",
-    "inDays": "Через {days} дней"
+    "inDays": "Через {days} дней",
+    "now": "Сейчас",
+    "closeGuide": "Закрыть руководство",
+    "km": "км"
   },
   "navigation": {
     "prayerTimes": "Время Молитв",
     "ramadan": "Рамадан",
     "islamicCalendar": "Исламский календарь",
-    "location": "Местоположение"
+    "location": "Местоположение",
+    "qibla": "Кибла",
+    "tasbih": "Тасбих",
+    "more": "Ещё"
   },
   "prayerTimes": {
     "noLocationSelected": "Местоположение не выбрано",
@@ -60,7 +66,8 @@
     "daysUntilRamadan": "{days} дней до Рамадана",
     "beginsOn": "Начинается {date}",
     "ramadanHasEnded": "Рамадан закончился",
-    "seeYouNextYear": "Увидимся в следующем году, ин ша Аллах"
+    "seeYouNextYear": "Увидимся в следующем году, ин ша Аллах",
+    "progress": "Прогресс"
   },
   "location": {
     "locationSettings": "Настройки местоположения",
@@ -72,7 +79,11 @@
     "searchCities": "Поиск городов...",
     "notFoundInCityList": "\"{query}\" не найден в нашем списке городов. Пожалуйста, используйте \"Определить моё местоположение\".",
     "geolocationNotSupported": "Геолокация не поддерживается вашим браузером",
-    "errorGettingLocation": "Ошибка получения местоположения: {message}"
+    "errorGettingLocation": "Ошибка получения местоположения: {message}",
+    "description": "Выберите местоположение для расчёта времён молитв",
+    "detecting": "Определяем...",
+    "detectDescription": "Использовать GPS для определения",
+    "tryDetect": "Попробуйте определить местоположение автоматически"
   },
   "settings": {
     "settings": "Настройки",
@@ -92,7 +103,8 @@
     "privacyPolicy": "Политика конфиденциальности",
     "learnHow": "Узнайте, как мы обрабатываем ваши данные",
     "developer": "Разработчик",
-    "developedBy": "Разработано"
+    "developedBy": "Разработано",
+    "customizeApp": "Настройте приложение под себя"
   },
   "privacy": {
     "backToSettings": "Назад к настройкам",
@@ -182,5 +194,37 @@
     "eidFitr": "Ид аль-Фитр",
     "arafah": "День Арафа",
     "eidAdha": "Ид аль-Адха"
+  },
+  "qibla": {
+    "title": "Направление Киблы",
+    "direction": "Направление Киблы",
+    "degrees": "{deg}°",
+    "fromNorth": "от Севера",
+    "compass": "Компас",
+    "yourLocation": "Ваше местоположение",
+    "meccaDirection": "Направление к Мекке",
+    "enableCompass": "Включить компас",
+    "compassNotSupported": "Компас не поддерживается",
+    "needLocation": "Укажите местоположение",
+    "calibrate": "Пожалуйста, помашите устройством \"восьмёркой\" для калибровки компаса",
+    "currentHeading": "Направление",
+    "qiblaDirection": "Кибла на"
+  },
+  "tasbih": {
+    "title": "Счётчик тасбих",
+    "counter": "Счётчик",
+    "reset": "Сброс",
+    "target": "Цель",
+    "completed": "Завершено!",
+    "subhanAllah": "СубханАллах",
+    "alhamdulillah": "Альхамдулиллях",
+    "allahuAkbar": "Аллаху Акбар",
+    "custom": "Своё",
+    "tapToCount": "Нажмите для счёта",
+    "round": "Раунд {n}"
+  },
+  "ayah": {
+    "title": "Аят дня",
+    "source": "Коран"
   }
 }

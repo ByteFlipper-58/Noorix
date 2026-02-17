@@ -1,6 +1,9 @@
 {
-  "name": "Noorix",
+  "name": "Noorix — Prayer Times",
   "short_name": "Noorix",
+  "description": "Accurate prayer times, Qibla direction, Tasbih counter, Islamic calendar and more",
+  "start_url": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +18,14 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#111827",
-  "background_color": "#111827",
-  "display": "standalone"
+  "theme_color": "#0a0f1a",
+  "background_color": "#0a0f1a",
+  "display": "standalone",
+  "orientation": "portrait",
+  "categories": [
+    "lifestyle",
+    "utilities"
+  ],
+  "lang": "en",
+  "dir": "ltr"
 }

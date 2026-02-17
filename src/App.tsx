@@ -9,6 +9,8 @@ import IslamicCalendarView from './views/IslamicCalendarView';
 import LocationView from './views/LocationView';
 import SettingsView from './views/SettingsView';
 import PrivacyPolicyView from './views/PrivacyPolicyView';
+import QiblaView from './views/QiblaView';
+import TasbihView from './views/TasbihView';
 import UserGuide from './components/UserGuide';
 import { useAppContext } from './context/AppContext';
 
@@ -35,6 +37,8 @@ const AnimatedRoutes = () => {
           <Route path="/ramadan" element={<RamadanView />} />
           <Route path="/calendar" element={<IslamicCalendarView />} />
           <Route path="/location" element={<LocationView />} />
+          <Route path="/qibla" element={<QiblaView />} />
+          <Route path="/tasbih" element={<TasbihView />} />
           <Route path="/settings" element={<SettingsView />} />
           <Route path="/privacy" element={<PrivacyPolicyView />} />
           <Route path="*" element={<Navigate to="/" replace />} />

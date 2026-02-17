@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import RamadanTracker from './RamadanTracker';
-import { Calendar, Book, Star } from 'lucide-react';
+import { Calendar, Book, Star, Sparkles, Droplets, UtensilsCrossed, Moon as MoonIcon } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
 import { addDays, format } from 'date-fns';
 import { ar, ru, tr, enUS } from 'date-fns/locale';
@@ -16,34 +16,28 @@ const RamadanTab: React.FC = () => {
   const { t, isRTL } = useLocalization();
   const { settings } = useAppContext();
   const { currentHijriDate, getGregorianDateForHijri } = useHijriCalendarApi();
-  
-  // Map language codes to date-fns locales
+
   const localeMap: Record<Language, Locale> = {
     en: enUS,
     ru: ru,
     ar: ar,
     tr: tr,
-    tt: ru // Use Russian locale for Tatar as it's not available in date-fns
+    tt: ru
   };
 
   const formatDate = (dateStr: string | Date) => {
     const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
     const locale = localeMap[settings.language];
-    
+
     if (settings.language === 'ar') {
-      // For Arabic, use a custom format
       const formatted = format(date, 'dd MMMM yyyy', { locale });
-      // Convert numbers to Arabic numerals
       return formatted.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[Number(d)]);
     }
-    
+
     if (settings.language === 'tt') {
-      // For Tatar, use Russian locale with custom month names
-      const formatted = format(date, 'dd MMMM yyyy', { locale: ru });
-      // You could add custom Tatar month name replacements here if needed
-      return formatted;
+      return format(date, 'dd MMMM yyyy', { locale: ru });
     }
-    
+
     return format(date, 'dd MMMM yyyy', { locale });
   };
 
@@ -87,128 +81,127 @@ const RamadanTab: React.FC = () => {
       eidAlFitrDate
     };
   }, [currentHijriDate, getGregorianDateForHijri]);
-  
+
+  const dateItems = [
+    { label: t('ramadan.firstDayRamadan'), date: importantDates?.ramadanStartDate, icon: '☪️' },
+    { label: t('ramadan.laylatAlQadr'), date: importantDates?.laylatAlQadrDate, icon: '✨' },
+    { label: t('ramadan.lastDayRamadan'), date: importantDates?.lastDayOfRamadanDate, icon: '🌙' },
+    { label: t('ramadan.eidAlFitr'), date: importantDates?.eidAlFitrDate, icon: '🎉' },
+  ];
+
+  const tips = [
+    { text: t('ramadan.stayHydrated'), icon: <Droplets size={14} className="text-blue-400" />, color: 'from-blue-500/20 to-blue-600/10' },
+    { text: t('ramadan.eatBalancedSuhoor'), icon: <UtensilsCrossed size={14} className="text-amber-400" />, color: 'from-amber-500/20 to-amber-600/10' },
+    { text: t('ramadan.breakFastWithDates'), icon: <Star size={14} className="text-orange-400" />, color: 'from-orange-500/20 to-orange-600/10' },
+    { text: t('ramadan.planTaraweeh'), icon: <MoonIcon size={14} className="text-emerald-400" />, color: 'from-emerald-500/20 to-emerald-600/10' },
+  ];
+
   return (
-    <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
-      <h2 className="text-2xl font-semibold mb-4">
-        {t('navigation.ramadan')}
-      </h2>
-      
+    <div className={`${isRTL ? 'text-right' : ''}`}>
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-semibold text-gray-100">
+          {t('navigation.ramadan')} ☪️
+        </h2>
+      </div>
+
       {/* Ramadan Tracker */}
-      <RamadanTracker className="mb-6" />
-      
-      {/* Additional Ramadan content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="bg-gray-800 rounded-xl p-4 md:p-6">
-          <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <div className={`bg-green-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
-              <Calendar className="text-green-400" size={22} />
-            </div>
-            <h3 className="font-medium text-lg">
-              {t('ramadan.importantDates')}
-            </h3>
+      <RamadanTracker className="mb-4" />
+
+      {/* ═══════════ IMPORTANT DATES ═══════════ */}
+      <div className="glass-card rounded-2xl overflow-hidden mb-4">
+        <div className="px-4 py-3 flex items-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 flex items-center justify-center flex-shrink-0">
+            <Calendar className="text-emerald-400" size={16} />
           </div>
-          <ul className="space-y-3">
-            <li className="flex justify-between items-center">
-              <span className="text-gray-300">
-                {t('ramadan.firstDayRamadan')}
-              </span>
-              <span className="text-gray-400 ml-2 text-right">
-                {importantDates ? formatDate(importantDates.ramadanStartDate) : '--:--'}
-              </span>
-            </li>
-            <li className="flex justify-between items-center">
-              <span className="text-gray-300">
-                {t('ramadan.laylatAlQadr')}
-              </span>
-              <span className="text-gray-400 ml-2 text-right">
-                {importantDates ? formatDate(importantDates.laylatAlQadrDate) : '--:--'}
-              </span>
-            </li>
-            <li className="flex justify-between items-center">
-              <span className="text-gray-300">
-                {t('ramadan.lastDayRamadan')}
-              </span>
-              <span className="text-gray-400 ml-2 text-right">
-                {importantDates ? formatDate(importantDates.lastDayOfRamadanDate) : '--:--'}
-              </span>
-            </li>
-            <li className="flex justify-between items-center">
-              <span className="text-gray-300">
-                {t('ramadan.eidAlFitr')}
-              </span>
-              <span className="text-gray-400 ml-2 text-right">
-                {importantDates ? formatDate(importantDates.eidAlFitrDate) : '--:--'}
-              </span>
-            </li>
-          </ul>
+          <h3 className={`font-semibold text-sm text-gray-300 ${isRTL ? 'mr-2.5' : 'ml-2.5'}`}>
+            {t('ramadan.importantDates')}
+          </h3>
         </div>
-        
-        <div className="bg-gray-800 rounded-xl p-4 md:p-6">
-          <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <div className={`bg-green-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
-              <Book className="text-green-400" size={22} />
+
+        <div className="divide-y divide-white/[0.04]">
+          {dateItems.map((item, i) => (
+            <div key={i} className="flex items-center px-4 py-3 hover:bg-white/[0.02] transition-colors duration-200">
+              <span className="text-base mr-3 flex-shrink-0">{item.icon}</span>
+              <p className="flex-1 text-sm text-gray-300">{item.label}</p>
+              <p className="text-xs text-gray-500 tabular-nums flex-shrink-0">
+                {item.date ? formatDate(item.date) : '--'}
+              </p>
             </div>
-            <h3 className="font-medium text-lg">
-              {t('ramadan.dailyDuas')}
-            </h3>
+          ))}
+        </div>
+      </div>
+
+      {/* ═══════════ DUAS ═══════════ */}
+      <div className="glass-card rounded-2xl overflow-hidden mb-4">
+        <div className="px-4 py-3 flex items-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-600/10 flex items-center justify-center flex-shrink-0">
+            <Book className="text-purple-400" size={16} />
           </div>
-          <div className="space-y-4">
-            <div className="bg-gray-700/50 p-4 rounded-lg">
-              <h4 className="text-sm text-gray-400 mb-2">
-                {t('ramadan.duaForBreakingFast')}
-              </h4>
-              <p className="text-gray-300 text-sm">
+          <h3 className={`font-semibold text-sm text-gray-300 ${isRTL ? 'mr-2.5' : 'ml-2.5'}`}>
+            {t('ramadan.dailyDuas')}
+          </h3>
+        </div>
+
+        <div className="px-4 pb-4 space-y-3">
+          {/* Dua for breaking fast */}
+          <div className="relative glass-card rounded-xl p-4 overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/[0.03] rounded-full -mr-8 -mt-8 blur-2xl" />
+            <div className="relative">
+              <div className="flex items-center mb-2">
+                <Sparkles className="text-amber-400/60 mr-1.5" size={12} />
+                <h4 className="text-[11px] text-amber-400/70 uppercase tracking-wider font-medium">
+                  {t('ramadan.duaForBreakingFast')}
+                </h4>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed">
                 {t('ramadan.duaIftar')}
               </p>
             </div>
-            <div className="bg-gray-700/50 p-4 rounded-lg">
-              <h4 className="text-sm text-gray-400 mb-2">
-                {t('ramadan.duaForLaylatAlQadr')}
-              </h4>
-              <p className="text-gray-300 text-sm">
+          </div>
+
+          {/* Dua for Laylat al-Qadr */}
+          <div className="relative glass-card rounded-xl p-4 overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500/[0.03] rounded-full -mr-8 -mt-8 blur-2xl" />
+            <div className="relative">
+              <div className="flex items-center mb-2">
+                <Sparkles className="text-purple-400/60 mr-1.5" size={12} />
+                <h4 className="text-[11px] text-purple-400/70 uppercase tracking-wider font-medium">
+                  {t('ramadan.duaForLaylatAlQadr')}
+                </h4>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed">
                 {t('ramadan.duaLaylatAlQadr')}
               </p>
             </div>
           </div>
         </div>
       </div>
-      
-      <div className="bg-gradient-to-br from-green-900/30 to-gray-800 rounded-xl p-4 md:p-6">
-        <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-          <div className={`bg-amber-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
-            <Star className="text-amber-400" size={22} fill="#f59e0b" />
+
+      {/* ═══════════ TIPS ═══════════ */}
+      <div className="glass-card rounded-2xl overflow-hidden">
+        <div className="px-4 py-3 flex items-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center flex-shrink-0">
+            <Star className="text-amber-400" size={16} fill="#f59e0b" />
           </div>
-          <h3 className="font-medium text-lg">
+          <h3 className={`font-semibold text-sm text-gray-300 ${isRTL ? 'mr-2.5' : 'ml-2.5'}`}>
             {t('ramadan.ramadanTips')}
           </h3>
         </div>
-        <ul className="space-y-3">
-          <li className={`flex items-start ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>1</div>
-            <span className="text-gray-300">
-              {t('ramadan.stayHydrated')}
-            </span>
-          </li>
-          <li className={`flex items-start ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>2</div>
-            <span className="text-gray-300">
-              {t('ramadan.eatBalancedSuhoor')}
-            </span>
-          </li>
-          <li className={`flex items-start ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>3</div>
-            <span className="text-gray-300">
-              {t('ramadan.breakFastWithDates')}
-            </span>
-          </li>
-          <li className={`flex items-start ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-            <div className={`bg-green-500/10 text-green-400 rounded-full w-6 h-6 flex-shrink-0 flex items-center justify-center ${isRTL ? 'ml-3 mt-0.5' : 'mr-3 mt-0.5'}`}>4</div>
-            <span className="text-gray-300">
-              {t('ramadan.planTaraweeh')}
-            </span>
-          </li>
-        </ul>
+
+        <div className="px-4 pb-4 space-y-2">
+          {tips.map((tip, i) => (
+            <div
+              key={i}
+              className={`flex items-start p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors duration-200 ${isRTL ? 'flex-row-reverse text-right' : ''}`}
+            >
+              <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${tip.color} flex items-center justify-center flex-shrink-0 ${isRTL ? 'ml-3' : 'mr-3'} mt-0.5`}>
+                {tip.icon}
+              </div>
+              <span className="text-gray-300 text-sm leading-relaxed">{tip.text}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

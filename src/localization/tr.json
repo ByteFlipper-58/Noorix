@@ -3,12 +3,18 @@
     "unknown": "Bilinmiyor",
     "today": "Bugün",
     "tomorrow": "Yarın",
-    "inDays": "{days} gün içinde"
+    "inDays": "{days} gün içinde",
+    "now": "Şimdi",
+    "closeGuide": "Kılavuzu kapat",
+    "km": "km"
   },
   "navigation": {
     "prayerTimes": "Namaz Vakitleri",
     "ramadan": "Ramazan",
-    "location": "Konum"
+    "location": "Konum",
+    "qibla": "Kıble",
+    "tasbih": "Tesbih",
+    "more": "Diğer"
   },
   "prayerTimes": {
     "noLocationSelected": "Konum Seçilmedi",
@@ -59,7 +65,8 @@
     "daysUntilRamadan": "Ramazan'a {days} gün kaldı",
     "beginsOn": "{date} tarihinde başlıyor",
     "ramadanHasEnded": "Ramazan sona erdi",
-    "seeYouNextYear": "İnşallah gelecek yıl görüşmek üzere"
+    "seeYouNextYear": "İnşallah gelecek yıl görüşmek üzere",
+    "progress": "İlerleme"
   },
   "location": {
     "locationSettings": "Konum Ayarları",
@@ -71,7 +78,11 @@
     "searchCities": "Şehirleri ara...",
     "notFoundInCityList": "\"{query}\" şehir listemizde bulunamadı. Lütfen bunun yerine \"Konumumu Tespit Et\" seçeneğini kullanın.",
     "geolocationNotSupported": "Coğrafi konum tarayıcınız tarafından desteklenmiyor",
-    "errorGettingLocation": "Konum alınırken hata oluştu: {message}"
+    "errorGettingLocation": "Konum alınırken hata oluştu: {message}",
+    "description": "Namaz vakti hesaplaması için konum seçin",
+    "detecting": "Belirleniyor...",
+    "detectDescription": "Belirlemek için GPS kullanın",
+    "tryDetect": "Konumunuzu otomatik olarak belirlemeyi deneyin"
   },
   "settings": {
     "settings": "Ayarlar",
@@ -91,7 +102,8 @@
     "privacyPolicy": "Gizlilik Politikası",
     "learnHow": "Verilerinizi nasıl işlediğimizi öğrenin",
     "developer": "Geliştirici",
-    "developedBy": "Geliştiren"
+    "developedBy": "Geliştiren",
+    "customizeApp": "Uygulamayı ihtiyaçlarınıza göre özelleştirin"
   },
   "privacy": {
     "backToSettings": "Ayarlara Geri Dön",
@@ -164,5 +176,37 @@
     "back": "Geri",
     "next": "İleri",
     "finish": "Başla"
+  },
+  "qibla": {
+    "title": "Kıble Yönü",
+    "direction": "Kıble Yönü",
+    "degrees": "{deg}°",
+    "fromNorth": "Kuzeyden",
+    "compass": "Pusula",
+    "yourLocation": "Konumunuz",
+    "meccaDirection": "Mekke Yönü",
+    "enableCompass": "Pusulayı Etkinleştir",
+    "compassNotSupported": "Pusula desteklenmiyor",
+    "needLocation": "Konumunuzu ayarlayın",
+    "calibrate": "Pusulayı kalibre etmek için lütfen cihazınızı 8 şeklinde sallayın",
+    "currentHeading": "Yön",
+    "qiblaDirection": "Kıble yönü"
+  },
+  "tasbih": {
+    "title": "Tesbih Sayacı",
+    "counter": "Sayaç",
+    "reset": "Sıfırla",
+    "target": "Hedef",
+    "completed": "Tamamlandı!",
+    "subhanAllah": "SubhanAllah",
+    "alhamdulillah": "Elhamdülillah",
+    "allahuAkbar": "Allahu Ekber",
+    "custom": "Özel",
+    "tapToCount": "Saymak için dokunun",
+    "round": "Tur {n}"
+  },
+  "ayah": {
+    "title": "Günün Ayeti",
+    "source": "Kuran"
   }
 }

@@ -7,27 +7,27 @@ import { logAnalyticsEvent } from '../firebase/firebase';
 const PrivacyPolicyTab: React.FC = () => {
   const { t, isRTL } = useLocalization();
   const navigate = useNavigate();
-  
+
   const handleBackToSettings = () => {
     navigate('/settings');
     logAnalyticsEvent('navigation', { from: 'privacy', to: 'settings' });
   };
-  
+
   return (
-    <div className={`max-w-4xl mx-auto ${isRTL ? 'text-right' : ''}`}>
-      <button 
+    <div className={`${isRTL ? 'text-right' : ''}`}>
+      <button
         onClick={handleBackToSettings}
-        className={`flex items-center text-green-500 hover:text-green-400 mb-5 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+        className={`flex items-center text-emerald-400 hover:text-emerald-300 mb-5 transition-colors duration-300 ${isRTL ? 'flex-row-reverse' : ''}`}
       >
         <ArrowLeft size={20} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />
         <span className="text-lg">{t('privacy.backToSettings')}</span>
       </button>
-      
+
       <h2 className="text-2xl font-semibold mb-6">
         {t('privacy.privacyPolicy')}
       </h2>
-      
-      <div className="space-y-6 text-gray-300">
+
+      <div className="space-y-6 text-gray-300 leading-relaxed">
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.introduction')}
@@ -36,7 +36,7 @@ const PrivacyPolicyTab: React.FC = () => {
             {t('privacy.introText')}
           </p>
         </section>
-        
+
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.informationWeCollect')}
@@ -56,7 +56,7 @@ const PrivacyPolicyTab: React.FC = () => {
             </li>
           </ul>
         </section>
-        
+
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.howWeUse')}
@@ -75,7 +75,7 @@ const PrivacyPolicyTab: React.FC = () => {
             </li>
           </ul>
         </section>
-        
+
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.dataStorage')}
@@ -87,7 +87,7 @@ const PrivacyPolicyTab: React.FC = () => {
             Некоторые данные, такие как информация о местоположении и настройки приложения, также используются для аналитики и улучшения методов расчета времени молитв. Эти данные хранятся временно на серверах Firebase и используются только в агрегированном виде.
           </p>
         </section>
-        
+
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.thirdPartyServices')}
@@ -107,7 +107,7 @@ const PrivacyPolicyTab: React.FC = () => {
             </li>
           </ul>
         </section>
-        
+
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.notifications')}
@@ -116,7 +116,7 @@ const PrivacyPolicyTab: React.FC = () => {
             {t('privacy.notificationsText')}
           </p>
         </section>
-        
+
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.yourRights')}
@@ -136,7 +136,7 @@ const PrivacyPolicyTab: React.FC = () => {
             </li>
           </ul>
         </section>
-        
+
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.changes')}
@@ -145,7 +145,7 @@ const PrivacyPolicyTab: React.FC = () => {
             {t('privacy.changesText')}
           </p>
         </section>
-        
+
         <section>
           <h3 className="text-xl font-medium text-white mb-3">
             {t('privacy.contactUs')}
@@ -154,8 +154,8 @@ const PrivacyPolicyTab: React.FC = () => {
             {t('privacy.contactUsText')}
           </p>
         </section>
-        
-        <div className="pt-5 text-sm text-gray-400 border-t border-gray-700">
+
+        <div className="pt-5 text-sm text-gray-500 border-t border-white/[0.06]">
           <p>
             {t('privacy.lastUpdated')}
           </p>

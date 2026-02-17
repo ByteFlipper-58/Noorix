@@ -1,80 +1,172 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    <!-- Метатеги для мобильных устройств -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-    <meta name="apple-mobile-web-app-title" content="Noorix" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    <!-- Цветовые схемы -->
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#111827" />
-    <meta name="msapplication-TileColor" content="#111827" />
-    <meta name="msapplication-navbutton-color" content="#111827" />
+  <!-- Метатеги для мобильных устройств -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="apple-mobile-web-app-title" content="Noorix" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <link rel="manifest" href="/site.webmanifest" />
-    <title>Noorix - Prayer Time Tracker</title>
+  <!-- Цветовые схемы -->
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111827" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#111827" />
+  <meta name="msapplication-TileColor" content="#111827" />
+  <meta name="msapplication-navbutton-color" content="#111827" />
 
-    <!-- Primary Meta Tags -->
-    <meta name="title" content="Noorix - Prayer Time Tracker" />
-    <meta name="description" content="Track prayer times and iftar schedules with automatic location detection. Accurate prayer times based on your location with multiple calculation methods." />
-    <meta name="keywords" content="prayer times, muslim prayer, islamic prayer, ramadan, iftar, suhoor, qibla, azan, salah, namaz, prayer app" />
-    <meta name="author" content="ByteFlipper" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <title>Noorix - Prayer Time Tracker</title>
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://noorix.app/" />
-    <meta property="og:title" content="Noorix - Prayer Time Tracker" />
-    <meta property="og:description" content="Track prayer times and iftar schedules with automatic location detection. Accurate prayer times based on your location with multiple calculation methods." />
-    <meta property="og:image" content="/og-image.png" />
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Noorix - Prayer Time Tracker" />
+  <meta name="description"
+    content="Track prayer times and iftar schedules with automatic location detection. Accurate prayer times based on your location with multiple calculation methods." />
+  <meta name="keywords"
+    content="prayer times, muslim prayer, islamic prayer, ramadan, iftar, suhoor, qibla, azan, salah, namaz, prayer app" />
+  <meta name="author" content="ByteFlipper" />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://noorix.app/" />
-    <meta property="twitter:title" content="Noorix - Prayer Time Tracker" />
-    <meta property="twitter:description" content="Track prayer times and iftar schedules with automatic location detection. Accurate prayer times based on your location with multiple calculation methods." />
-    <meta property="twitter:image" content="/og-image.png" />
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://noorix.byteflipper.com/" />
+  <meta property="og:title" content="Noorix - Prayer Time Tracker" />
+  <meta property="og:description"
+    content="Track prayer times and iftar schedules with automatic location detection. Accurate prayer times based on your location with multiple calculation methods." />
+  <meta property="og:image" content="/og-image.png" />
 
-    <!-- Canonical URL -->
-    <meta rel="canonical" href="https://noorix.app/" />
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://noorix.byteflipper.com/" />
+  <meta property="twitter:title" content="Noorix - Prayer Time Tracker" />
+  <meta property="twitter:description"
+    content="Track prayer times and iftar schedules with automatic location detection. Accurate prayer times based on your location with multiple calculation methods." />
+  <meta property="twitter:image" content="/og-image.png" />
 
-    <!-- Add Arabic font support -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://noorix.byteflipper.com/" />
 
-    <style>
-      :root {
-        color-scheme: dark light;
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Noorix",
+    "url": "https://noorix.byteflipper.com/",
+    "description": "Accurate prayer times, Qibla direction, Tasbih counter, Islamic calendar and Ramadan tracker",
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "Web",
+    "author": {
+      "@type": "Organization",
+      "name": "ByteFlipper",
+      "url": "https://byteflipper.com"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "inLanguage": ["en", "ru", "ar", "tr", "tt"]
+  }
+  </script>
+
+  <!-- Add Arabic font support -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark light;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Splash Screen -->
+  <div id="splash" style="
+      position: fixed; inset: 0; z-index: 9999;
+      background: #0a0f1a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.5s ease;
+    ">
+    <div style="
+        width: 80px; height: 80px; border-radius: 24px;
+        background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05));
+        border: 1px solid rgba(16,185,129,0.2);
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 20px;
+        animation: splashPulse 2s ease-in-out infinite;
+      ">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+      </svg>
+    </div>
+    <div style="
+        font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 600;
+        color: white; letter-spacing: 2px;
+      ">NOORIX</div>
+    <div style="
+        font-family: 'Inter', sans-serif; font-size: 11px;
+        color: rgba(255,255,255,0.3); margin-top: 6px;
+        letter-spacing: 3px; text-transform: uppercase;
+      ">Prayer Times</div>
+  </div>
+  <style>
+    @keyframes splashPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
       }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const themeColor = window.matchMedia("(prefers-color-scheme: dark)").matches ? "#111827" : "#111827";
-        document.querySelector('meta[name="theme-color"]').setAttribute("content", themeColor);
-      });
-    </script>
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 40px rgba(16, 185, 129, 0.2);
+      }
+    }
+  </style>
+  <script>
+    // Hide splash after React app mounts
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        var splash = document.getElementById('splash');
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(function () { splash.remove(); }, 500);
+        }
+      }, 800);
+    });
+  </script>
 
-    <!-- No JavaScript fallback -->
-    <noscript>
-      <div style="padding: 2rem; text-align: center; font-family: 'Roboto', sans-serif;">
-        <h1 style="color: #10b981; margin-bottom: 1rem;">Noorix - Prayer Time Tracker</h1>
-        <p>Please enable JavaScript to use this application.</p>
-        <p>Пожалуйста, включите JavaScript для использования этого приложения.</p>
-        <p style="font-family: 'Amiri', serif;">الرجاء تمكين JavaScript لاستخدام هذا التطبيق.</p>
-      </div>
-    </noscript>
-  </body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const themeColor = window.matchMedia("(prefers-color-scheme: dark)").matches ? "#111827" : "#111827";
+      document.querySelector('meta[name="theme-color"]').setAttribute("content", themeColor);
+    });
+  </script>
+
+  <!-- No JavaScript fallback -->
+  <noscript>
+    <div style="padding: 2rem; text-align: center; font-family: 'Roboto', sans-serif;">
+      <h1 style="color: #10b981; margin-bottom: 1rem;">Noorix - Prayer Time Tracker</h1>
+      <p>Please enable JavaScript to use this application.</p>
+      <p>Пожалуйста, включите JavaScript для использования этого приложения.</p>
+      <p style="font-family: 'Amiri', serif;">الرجاء تمكين JavaScript لاستخدام هذا التطبيق.</p>
+    </div>
+  </noscript>
+</body>
+
 </html>

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { Calendar, Star } from 'lucide-react';
+import { Star, Clock, Moon } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { ar, ru, tr, enUS } from 'date-fns/locale';
@@ -16,12 +16,25 @@ interface ImportantDateEntry {
   date: Date;
   name: string;
   daysUntil: number;
+  hijriMonth: number;
 }
 
 interface ImportantDateMonth {
   month: string;
+  hijriMonth: number;
   dates: ImportantDateEntry[];
 }
+
+// Month emoji mapping for visual distinction
+const monthEmojis: Record<string, string> = {
+  'Muharram': '🌙',
+  "Rabi' al-Awwal": '🕌',
+  'Rajab': '✨',
+  "Sha'ban": '🌟',
+  'Ramadan': '☪️',
+  'Shawwal': '🎉',
+  'Dhu al-Hijjah': '🕋',
+};
 
 const IslamicCalendarTab: React.FC = () => {
   const { t, isRTL } = useLocalization();
@@ -36,20 +49,19 @@ const IslamicCalendarTab: React.FC = () => {
     tt: ru
   };
 
-  const formatDate = (dateStr: string | Date) => {
+
+
+
+  const formatShortDate = (dateStr: string | Date) => {
     const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
     const locale = localeMap[settings.language];
 
     if (settings.language === 'ar') {
-      const formatted = format(date, 'dd MMMM yyyy', { locale });
+      const formatted = format(date, 'dd MMM', { locale });
       return formatted.replace(/[0-9]/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[Number(digit)]);
     }
 
-    if (settings.language === 'tt') {
-      return format(date, 'dd MMMM yyyy', { locale: ru });
-    }
-
-    return format(date, 'dd MMMM yyyy', { locale });
+    return format(date, 'dd MMM yyyy', { locale: settings.language === 'tt' ? ru : locale });
   };
 
   const importantDates = useMemo<ImportantDateMonth[]>(() => {
@@ -60,6 +72,7 @@ const IslamicCalendarTab: React.FC = () => {
     const monthSpecs = [
       {
         month: 'Muharram',
+        hijriMonth: 1,
         dates: [
           { day: 1, month: 1, name: t('islamicCalendar.newYear') },
           { day: 10, month: 1, name: t('islamicCalendar.ashura') }
@@ -67,18 +80,22 @@ const IslamicCalendarTab: React.FC = () => {
       },
       {
         month: "Rabi' al-Awwal",
+        hijriMonth: 3,
         dates: [{ day: 12, month: 3, name: t('islamicCalendar.mawlid') }]
       },
       {
         month: 'Rajab',
+        hijriMonth: 7,
         dates: [{ day: 27, month: 7, name: t('islamicCalendar.israMiraj') }]
       },
       {
         month: "Sha'ban",
+        hijriMonth: 8,
         dates: [{ day: 15, month: 8, name: t('islamicCalendar.laylatBaraah') }]
       },
       {
         month: 'Ramadan',
+        hijriMonth: 9,
         dates: [
           { day: 1, month: 9, name: t('islamicCalendar.ramadanStart') },
           { day: 27, month: 9, name: t('islamicCalendar.laylatQadr') }
@@ -86,10 +103,12 @@ const IslamicCalendarTab: React.FC = () => {
       },
       {
         month: 'Shawwal',
+        hijriMonth: 10,
         dates: [{ day: 1, month: 10, name: t('islamicCalendar.eidFitr') }]
       },
       {
         month: 'Dhu al-Hijjah',
+        hijriMonth: 12,
         dates: [
           { day: 9, month: 12, name: t('islamicCalendar.arafah') },
           { day: 10, month: 12, name: t('islamicCalendar.eidAdha') }
@@ -99,6 +118,7 @@ const IslamicCalendarTab: React.FC = () => {
 
     return monthSpecs.map((monthData) => ({
       month: monthData.month,
+      hijriMonth: monthData.hijriMonth,
       dates: monthData.dates.map((event) => {
         const occursThisHijriYear =
           event.month > currentHijriDate.month ||
@@ -118,7 +138,8 @@ const IslamicCalendarTab: React.FC = () => {
           day: String(event.day),
           date: gregorianDate,
           name: event.name,
-          daysUntil: differenceInCalendarDays(gregorianDate, today)
+          daysUntil: differenceInCalendarDays(gregorianDate, today),
+          hijriMonth: event.month
         };
       })
     }));
@@ -156,82 +177,184 @@ const IslamicCalendarTab: React.FC = () => {
     const allHolidays = importantDates.flatMap((month) => month.dates);
     if (allHolidays.length === 0) return null;
 
-    return allHolidays.reduce((closest, holiday) => {
+    const upcoming = allHolidays.filter(h => h.daysUntil >= 0);
+    if (upcoming.length === 0) return null;
+
+    return upcoming.reduce((closest, holiday) => {
       if (!closest) return holiday;
       return holiday.daysUntil < closest.daysUntil ? holiday : closest;
     }, null as ImportantDateEntry | null);
   }, [importantDates]);
 
-  return (
-    <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
-      <h2 className="text-2xl font-semibold mb-6">
-        {t('islamicCalendar.title')}
-      </h2>
+  const getDaysUntilBadge = (daysUntil: number) => {
+    if (daysUntil === 0) return { text: t('common.today'), color: 'bg-emerald-500/20 text-emerald-400', glow: true };
+    if (daysUntil === 1) return { text: t('common.tomorrow'), color: 'bg-amber-500/20 text-amber-400', glow: false };
+    if (daysUntil <= 7) return { text: t('common.inDays', { days: daysUntil }), color: 'bg-blue-500/15 text-blue-400', glow: false };
+    if (daysUntil <= 30) return { text: t('common.inDays', { days: daysUntil }), color: 'bg-purple-500/15 text-purple-400', glow: false };
+    return { text: t('common.inDays', { days: daysUntil }), color: 'bg-white/[0.06] text-gray-400', glow: false };
+  };
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-gray-800 rounded-xl p-6">
-          <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            <div className={`bg-green-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
-              <Calendar className="text-green-400" size={22} />
+  // Determine if a month is current
+  const isCurrentMonth = (hijriMonth: number) => {
+    return currentHijriDate?.month === hijriMonth;
+  };
+
+  return (
+    <div className={`${isRTL ? 'text-right' : ''}`}>
+      {/* Header */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-100">
+          {t('islamicCalendar.title')}
+        </h2>
+        {currentHijriDate && (
+          <p className="text-gray-500 text-sm mt-1">
+            {currentHijriDate.day} / {currentHijriDate.month} / {currentHijriDate.year} AH
+          </p>
+        )}
+      </div>
+
+      {/* ═══════════ HERO: CURRENT YEAR + NEXT HOLIDAY ═══════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+        {/* Current Hijri Year */}
+        <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-28 h-28 bg-emerald-500/5 rounded-full -mr-10 -mt-10 blur-2xl" />
+          <div className="relative">
+            <div className="flex items-center mb-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 flex items-center justify-center flex-shrink-0">
+                <Moon className="text-emerald-400" size={20} />
+              </div>
+              <p className={`text-sm text-gray-500 ${isRTL ? 'mr-3' : 'ml-3'}`}>
+                {t('islamicCalendar.currentYear')}
+              </p>
             </div>
-            <h3 className="font-medium text-lg">
-              {t('islamicCalendar.currentYear')}
-            </h3>
+            <p className="text-3xl font-bold text-emerald-400 tabular-nums">
+              {currentYearRange ? currentYearRange.hijriYear : '--'}
+              <span className="text-lg font-normal text-emerald-400/50 ml-1.5">AH</span>
+            </p>
+            <p className="text-gray-600 text-xs mt-2">
+              {currentYearRange
+                ? `${formatShortDate(currentYearRange.startDate)} — ${formatShortDate(currentYearRange.endDate)}`
+                : '--'}
+            </p>
           </div>
-          <p className="text-3xl font-bold text-green-400 mb-2">
-            {currentYearRange ? `${currentYearRange.hijriYear} AH` : '--'}
-          </p>
-          <p className="text-gray-400">
-            {currentYearRange
-              ? `${formatDate(currentYearRange.startDate)} - ${formatDate(currentYearRange.endDate)}`
-              : '--'}
-          </p>
         </div>
 
+        {/* Next Holiday */}
         {nextHoliday && (
-          <div className="bg-gradient-to-br from-amber-900/30 to-gray-800 rounded-xl p-6">
-            <div className={`flex items-center mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <div className={`bg-amber-500/20 p-3 rounded-lg ${isRTL ? 'ml-3' : 'mr-3'}`}>
-                <Star className="text-amber-400" size={22} fill="#f59e0b" />
+          <div className="glass-card rounded-2xl p-5 relative overflow-hidden bg-gradient-to-br from-amber-900/10 to-transparent">
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-amber-500/5 rounded-full -ml-8 -mb-8 blur-2xl" />
+            <div className="relative">
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center flex-shrink-0">
+                  <Star className="text-amber-400" size={20} fill="#f59e0b" />
+                </div>
+                <p className={`text-sm text-gray-500 ${isRTL ? 'mr-3' : 'ml-3'}`}>
+                  {t('islamicCalendar.nextHoliday')}
+                </p>
               </div>
-              <h3 className="font-medium text-lg">
-                {t('islamicCalendar.nextHoliday')}
-              </h3>
-            </div>
-            <div className="space-y-2">
-              <p className="text-xl font-medium text-amber-400">{nextHoliday.name}</p>
-              <p className="text-gray-300">{formatDate(nextHoliday.date)}</p>
-              <p className="text-sm text-amber-300/80">
-                {nextHoliday.daysUntil === 0
-                  ? t('common.today')
-                  : nextHoliday.daysUntil === 1
-                    ? t('common.tomorrow')
-                    : t('common.inDays', { days: nextHoliday.daysUntil })}
-              </p>
+              <p className="text-lg font-semibold text-amber-300 mb-1 leading-tight">{nextHoliday.name}</p>
+              <p className="text-gray-500 text-xs">{formatShortDate(nextHoliday.date)}</p>
+              <div className="mt-2.5">
+                <span className={`
+                  inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full
+                  ${getDaysUntilBadge(nextHoliday.daysUntil).color}
+                  ${getDaysUntilBadge(nextHoliday.daysUntil).glow ? 'shadow-[0_0_10px_rgba(16,185,129,0.3)]' : ''}
+                `}>
+                  <Clock size={11} className={`${isRTL ? 'ml-1' : 'mr-1'}`} />
+                  {getDaysUntilBadge(nextHoliday.daysUntil).text}
+                </span>
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      <div className="bg-gray-800 rounded-xl overflow-hidden">
-        {importantDates.map((monthData, index) => (
-          <div key={monthData.month} className={`p-6 ${index !== 0 ? 'border-t border-gray-700' : ''}`}>
-            <h3 className="text-xl font-medium mb-4 text-green-400">{monthData.month}</h3>
-            <div className="space-y-4">
-              {monthData.dates.map((date) => (
-                <div key={date.name} className="flex items-start">
-                  <div className={`bg-green-500/10 text-green-400 rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center mt-1 ${isRTL ? 'ml-3' : 'mr-3'}`}>
-                    {date.day}
-                  </div>
-                  <div>
-                    <p className="font-medium text-lg">{date.name}</p>
-                    <p className="text-gray-400">{formatDate(date.date)}</p>
-                  </div>
-                </div>
-              ))}
+      {/* ═══════════ EVENTS TIMELINE ═══════════ */}
+      <div className="space-y-2.5">
+        {importantDates.map((monthData) => {
+          const isCurrent = isCurrentMonth(monthData.hijriMonth);
+          const emoji = monthEmojis[monthData.month] || '📅';
+
+          return (
+            <div
+              key={monthData.month}
+              className={`
+                glass-card rounded-2xl overflow-hidden transition-all duration-300
+                ${isCurrent ? 'ring-1 ring-emerald-500/20' : ''}
+              `}
+            >
+              {/* Month header */}
+              <div className={`px-4 py-3 flex items-center ${isCurrent ? 'bg-emerald-500/[0.04]' : ''}`}>
+                <span className="text-lg mr-2.5">{emoji}</span>
+                <h3 className={`font-semibold text-sm ${isCurrent ? 'text-emerald-400' : 'text-gray-300'}`}>
+                  {monthData.month}
+                </h3>
+                {isCurrent && (
+                  <span className="ml-2 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded-full bg-emerald-500/15 text-emerald-400">
+                    {t('common.now')}
+                  </span>
+                )}
+                <div className={`flex-1 h-px bg-white/[0.04] ${isRTL ? 'mr-3' : 'ml-3'}`} />
+              </div>
+
+              {/* Events */}
+              <div className="divide-y divide-white/[0.04]">
+                {monthData.dates.map((dateEntry) => {
+                  const badge = getDaysUntilBadge(dateEntry.daysUntil);
+                  const isPast = dateEntry.daysUntil < 0;
+                  const isToday = dateEntry.daysUntil === 0;
+
+                  return (
+                    <div
+                      key={dateEntry.name}
+                      className={`
+                        flex items-center px-4 py-3.5 transition-colors duration-200
+                        ${isToday ? 'bg-emerald-500/[0.05]' : 'hover:bg-white/[0.02]'}
+                        ${isPast ? 'opacity-50' : ''}
+                      `}
+                    >
+                      {/* Day badge */}
+                      <div className={`
+                        w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold
+                        ${isToday
+                          ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]'
+                          : isPast
+                            ? 'bg-white/[0.04] text-gray-600'
+                            : 'bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 text-emerald-400'}
+                      `}>
+                        {dateEntry.day}
+                      </div>
+
+                      {/* Info */}
+                      <div className={`flex-1 min-w-0 ${isRTL ? 'mr-3' : 'ml-3'}`}>
+                        <p className={`font-medium text-sm truncate ${isToday ? 'text-emerald-300' : isPast ? 'text-gray-500' : 'text-gray-200'}`}>
+                          {dateEntry.name}
+                        </p>
+                        <p className="text-gray-600 text-xs mt-0.5">{formatShortDate(dateEntry.date)}</p>
+                      </div>
+
+                      {/* Days until badge */}
+                      {!isPast && (
+                        <span className={`
+                          text-[11px] font-medium px-2 py-0.5 rounded-full flex-shrink-0
+                          ${badge.color}
+                          ${badge.glow ? 'shadow-[0_0_8px_rgba(16,185,129,0.25)]' : ''}
+                        `}>
+                          {badge.text}
+                        </span>
+                      )}
+                      {isPast && (
+                        <span className="text-[11px] text-gray-700 flex-shrink-0">
+                          ✓
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { getCalculationMethodName, getMadhabName } from '../data/cities';
-import { Bell, BellOff, Clock, Globe, Shield, Code, ChevronDown } from 'lucide-react';
+
+import {
+  Bell, BellOff, Clock, Globe, Shield, Code, ChevronDown,
+  ChevronRight, ExternalLink, Calculator, Compass,
+  Send, Globe2
+} from 'lucide-react';
 import { requestNotificationPermission } from '../services/prayerTimeService';
 import { CalculationMethod, MadhabType, Language } from '../types';
 import useLocalization from '../hooks/useLocalization';
@@ -12,19 +16,37 @@ const SettingsTab: React.FC = () => {
   const { t, isRTL } = useLocalization();
   const navigate = useNavigate();
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
-  
-  const handleCalculationMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateSettings({ calculationMethod: Number(e.target.value) as CalculationMethod });
+  const [calcDropdownOpen, setCalcDropdownOpen] = useState(false);
+  const languageRef = useRef<HTMLDivElement>(null);
+  const calcRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (languageRef.current && !languageRef.current.contains(e.target as Node)) {
+        setLanguageDropdownOpen(false);
+      }
+      if (calcRef.current && !calcRef.current.contains(e.target as Node)) {
+        setCalcDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleCalculationMethodChange = (value: number) => {
+    updateSettings({ calculationMethod: value as CalculationMethod });
+    setCalcDropdownOpen(false);
   };
-  
-  const handleMadhabChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateSettings({ madhab: Number(e.target.value) as MadhabType });
+
+  const handleMadhabChange = (value: number) => {
+    updateSettings({ madhab: value as MadhabType });
   };
-  
+
   const handleTimeFormatChange = (format: '12h' | '24h') => {
     updateSettings({ timeFormat: format });
   };
-  
+
   const toggleNotifications = async () => {
     if (!settings.notifications) {
       const granted = await requestNotificationPermission();
@@ -35,216 +57,320 @@ const SettingsTab: React.FC = () => {
       updateSettings({ notifications: false });
     }
   };
-  
+
   const handleLanguageChange = (language: Language) => {
     updateSettings({ language });
     setLanguageDropdownOpen(false);
   };
-  
-  const languageNames: Record<Language, string> = {
-    'en': 'English',
-    'ru': 'Русский',
-    'ar': 'العربية',
-    'tr': 'Türkçe',
-    'tt': 'Татарча'
-  };
-  
+
+  const languageOptions: { code: Language; name: string; native: string; flag: string }[] = [
+    { code: 'en', name: 'English', native: 'English', flag: '🇺🇸' },
+    { code: 'ru', name: 'Russian', native: 'Русский', flag: '🇷🇺' },
+    { code: 'ar', name: 'Arabic', native: 'العربية', flag: '🇸🇦' },
+    { code: 'tr', name: 'Turkish', native: 'Türkçe', flag: '🇹🇷' },
+    { code: 'tt', name: 'Tatar', native: 'Татарча', flag: '🏳️' },
+  ];
+
+  const calculationMethods = [
+    { value: 0, name: "Shafi'i, Maliki, Ja'fari, Hanbali" },
+    { value: 1, name: "Hanafi" },
+    { value: 2, name: "Islamic Society of North America" },
+    { value: 3, name: "Muslim World League" },
+    { value: 4, name: "Umm Al-Qura University, Makkah" },
+    { value: 5, name: "Egyptian General Authority of Survey" },
+    { value: 7, name: "Institute of Geophysics, Tehran" },
+    { value: 8, name: "Gulf Region" },
+    { value: 9, name: "Kuwait" },
+    { value: 10, name: "Qatar" },
+    { value: 11, name: "Majlis Ugama Islam Singapura" },
+    { value: 12, name: "Union Organization Islamic de France" },
+    { value: 13, name: "Diyanet İşleri Başkanlığı, Turkey" },
+    { value: 14, name: "Spiritual Administration of Muslims of Russia" },
+    { value: 15, name: "Moonsighting Committee Worldwide" },
+  ];
+
+  const currentLang = languageOptions.find(l => l.code === settings.language);
+  const currentCalc = calculationMethods.find(m => m.value === settings.calculationMethod);
+
   return (
-    <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
-      <h2 className="text-2xl font-semibold mb-4">
-        {t('settings.settings')}
-      </h2>
-      
-      <div className="space-y-6">
-        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
-          <h3 className="font-medium mb-4 text-lg">
-            {t('settings.language')}
-          </h3>
-          <div className="relative">
-            <button
-              onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
-              className="w-full flex items-center justify-between py-3 px-4 rounded-xl border border-gray-700 bg-gray-800 hover:bg-gray-700 transition-colors"
-            >
-              <span className="text-lg">{languageNames[settings.language]}</span>
-              <ChevronDown size={20} className={`transition-transform ${languageDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {languageDropdownOpen && (
-              <div className="absolute z-10 mt-2 w-full bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden">
-                {Object.entries(languageNames).map(([code, name]) => (
-                  <button
-                    key={code}
-                    onClick={() => handleLanguageChange(code as Language)}
-                    className={`
-                      w-full text-left py-3 px-4 hover:bg-gray-700 transition-colors
-                      ${settings.language === code ? 'bg-green-900/20 text-green-400' : ''}
-                    `}
-                  >
-                    {name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
-          <h3 className="font-medium mb-4 text-lg">
-            {t('settings.calculationMethod')}
-          </h3>
-          <select
-            value={settings.calculationMethod}
-            onChange={handleCalculationMethodChange}
-            className={`w-full p-3 border dark:border-gray-700 rounded-xl bg-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 ${isRTL ? 'text-right' : ''} text-lg`}
-          >
-            <option value={0}>Shafi'i, Maliki, Ja'fari, Hanbali</option>
-            <option value={1}>Hanafi</option>
-            <option value={2}>Islamic Society of North America</option>
-            <option value={3}>Muslim World League</option>
-            <option value={4}>Umm Al-Qura University, Makkah</option>
-            <option value={5}>Egyptian General Authority of Survey</option>
-            <option value={7}>Institute of Geophysics, University of Tehran</option>
-            <option value={8}>Gulf Region</option>
-            <option value={9}>Kuwait</option>
-            <option value={10}>Qatar</option>
-            <option value={11}>Majlis Ugama Islam Singapura, Singapore</option>
-            <option value={12}>Union Organization islamic de France</option>
-            <option value={13}>Diyanet İşleri Başkanlığı, Turkey</option>
-            <option value={14}>Spiritual Administration of Muslims of Russia</option>
-            <option value={15}>Moonsighting Committee Worldwide</option>
-          </select>
-          <p className={`mt-3 text-sm text-gray-400 ${isRTL ? 'text-right' : ''}`}>
-            {t('settings.current')}: {getCalculationMethodName(settings.calculationMethod)}
-          </p>
-        </div>
-        
-        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
-          <h3 className="font-medium mb-4 text-lg">
-            {t('settings.asrCalculation')}
-          </h3>
-          <select
-            value={settings.madhab}
-            onChange={handleMadhabChange}
-            className={`w-full p-3 border dark:border-gray-700 rounded-xl bg-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 ${isRTL ? 'text-right' : ''} text-lg`}
-          >
-            <option value={0}>Shafi'i (Standard)</option>
-            <option value={1}>Hanafi</option>
-          </select>
-          <p className={`mt-3 text-sm text-gray-400 ${isRTL ? 'text-right' : ''}`}>
-            {t('settings.current')}: {getMadhabName(settings.madhab)}
-          </p>
-        </div>
-        
-        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
-          <h3 className="font-medium mb-4 text-lg">
-            {t('settings.timeFormat')}
-          </h3>
-          <div className="flex space-x-3">
-            <button
-              onClick={() => handleTimeFormatChange('12h')}
-              className={`
-                flex-1 py-3 px-4 rounded-xl border transition-colors
-                ${settings.timeFormat === '12h'
-                  ? 'bg-green-900/20 border-green-800 text-green-400'
-                  : 'border-gray-700 hover:bg-gray-700'}
-              `}
-            >
-              <div className="flex items-center justify-center">
-                <Clock size={18} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />
-                <span className="text-lg">{t('settings.hour12')}</span>
-              </div>
-            </button>
-            <button
-              onClick={() => handleTimeFormatChange('24h')}
-              className={`
-                flex-1 py-3 px-4 rounded-xl border transition-colors
-                ${settings.timeFormat === '24h'
-                  ? 'bg-green-900/20 border-green-800 text-green-400'
-                  : 'border-gray-700 hover:bg-gray-700'}
-              `}
-            >
-              <div className="flex items-center justify-center">
-                <Clock size={18} className={`${isRTL ? 'ml-2' : 'mr-2'}`} />
-                <span className="text-lg">{t('settings.hour24')}</span>
-              </div>
-            </button>
-          </div>
-        </div>
-        
-        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
-          <h3 className="font-medium mb-4 text-lg">
-            {t('settings.notifications')}
-          </h3>
+    <div className={`${isRTL ? 'text-right' : ''}`}>
+      {/* Header */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-100">
+          {t('settings.settings')}
+        </h2>
+        <p className="text-gray-500 text-sm mt-1">{t('settings.customizeApp')}</p>
+      </div>
+
+      <div className="space-y-3">
+
+        {/* ═══════════ LANGUAGE ═══════════ */}
+        <div ref={languageRef} className="relative">
           <button
-            onClick={toggleNotifications}
+            onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
             className={`
-              w-full py-3 px-4 rounded-xl border transition-colors flex items-center justify-center
-              ${settings.notifications
-                ? 'bg-green-900/20 border-green-800 text-green-400'
-                : 'border-gray-700 hover:bg-gray-700'}
+              w-full glass-card rounded-2xl p-4 flex items-center transition-all duration-300
+              ${languageDropdownOpen ? 'ring-1 ring-emerald-500/30' : ''}
             `}
           >
-            {settings.notifications ? (
-              <>
-                <Bell size={20} className={`${isRTL ? 'ml-3' : 'mr-3'}`} />
-                <span className="text-lg">{t('settings.notificationsEnabled')}</span>
-              </>
-            ) : (
-              <>
-                <BellOff size={20} className={`${isRTL ? 'ml-3' : 'mr-3'}`} />
-                <span className="text-lg">{t('settings.enableNotifications')}</span>
-              </>
-            )}
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 flex items-center justify-center flex-shrink-0">
+              <Globe className="text-blue-400" size={20} />
+            </div>
+            <div className={`flex-1 ${isRTL ? 'mr-3 text-right' : 'ml-3 text-left'}`}>
+              <p className="text-sm text-gray-500">{t('settings.language')}</p>
+              <p className="font-medium text-gray-200 mt-0.5">
+                {currentLang?.flag} {currentLang?.native}
+              </p>
+            </div>
+            <ChevronDown
+              size={18}
+              className={`text-gray-600 transition-transform duration-300 ${languageDropdownOpen ? 'rotate-180' : ''}`}
+            />
           </button>
-          <p className={`mt-3 text-sm text-gray-400 ${isRTL ? 'text-right' : ''}`}>
-            {settings.notifications
-              ? t('settings.notificationsDescription')
-              : t('settings.enableToReceive')}
-          </p>
+
+          {/* Dropdown */}
+          {languageDropdownOpen && (
+            <div className="absolute z-20 mt-1.5 w-full bg-[#111827]/98 backdrop-blur-2xl border border-white/[0.08] rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.5)] overflow-hidden animate-in">
+              {languageOptions.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLanguageChange(lang.code)}
+                  className={`
+                    w-full flex items-center py-3.5 px-4 transition-all duration-200
+                    ${settings.language === lang.code
+                      ? 'bg-emerald-500/10 text-emerald-400'
+                      : 'hover:bg-white/[0.04] text-gray-300'}
+                  `}
+                >
+                  <span className="text-lg mr-3">{lang.flag}</span>
+                  <span className="font-medium">{lang.native}</span>
+                  {settings.language === lang.code && (
+                    <div className={`${isRTL ? 'mr-auto' : 'ml-auto'} w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]`} />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        
-        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
-          <h3 className="font-medium mb-4 text-lg">
-            {t('settings.privacy')}
-          </h3>
+
+        {/* ═══════════ TIME FORMAT ═══════════ */}
+        <div className="glass-card rounded-2xl p-4">
+          <div className="flex items-center mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 flex items-center justify-center flex-shrink-0">
+              <Clock className="text-purple-400" size={20} />
+            </div>
+            <div className={`${isRTL ? 'mr-3' : 'ml-3'}`}>
+              <p className="text-sm text-gray-500">{t('settings.timeFormat')}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {(['12h', '24h'] as const).map((fmt) => (
+              <button
+                key={fmt}
+                onClick={() => handleTimeFormatChange(fmt)}
+                className={`
+                  relative py-3 px-4 rounded-xl font-medium text-sm transition-all duration-300 overflow-hidden
+                  ${settings.timeFormat === fmt
+                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 shadow-[0_0_20px_rgba(16,185,129,0.08)]'
+                    : 'bg-white/[0.03] text-gray-400 border border-white/[0.06] hover:bg-white/[0.06] hover:text-gray-200'}
+                `}
+              >
+                {settings.timeFormat === fmt && (
+                  <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
+                )}
+                <span className="text-lg font-semibold tabular-nums">
+                  {fmt === '12h' ? '1:30 PM' : '13:30'}
+                </span>
+                <p className="text-xs mt-0.5 opacity-60">{t(`settings.hour${fmt.replace('h', '')}`)}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ═══════════ CALCULATION METHOD ═══════════ */}
+        <div ref={calcRef} className="relative">
           <button
-            onClick={() => navigate('/privacy')}
-            className="w-full py-3 px-4 rounded-xl border border-gray-700 hover:bg-gray-700 transition-colors flex items-center justify-center"
+            onClick={() => setCalcDropdownOpen(!calcDropdownOpen)}
+            className={`
+              w-full glass-card rounded-2xl p-4 flex items-center transition-all duration-300
+              ${calcDropdownOpen ? 'ring-1 ring-emerald-500/30' : ''}
+            `}
           >
-            <Shield size={20} className={`${isRTL ? 'ml-3' : 'mr-3'}`} />
-            <span className="text-lg">{t('settings.privacyPolicy')}</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center flex-shrink-0">
+              <Compass className="text-amber-400" size={20} />
+            </div>
+            <div className={`flex-1 min-w-0 ${isRTL ? 'mr-3 text-right' : 'ml-3 text-left'}`}>
+              <p className="text-sm text-gray-500">{t('settings.calculationMethod')}</p>
+              <p className="font-medium text-gray-200 mt-0.5 truncate">
+                {currentCalc?.name || '--'}
+              </p>
+            </div>
+            <ChevronDown
+              size={18}
+              className={`text-gray-600 transition-transform duration-300 flex-shrink-0 ${calcDropdownOpen ? 'rotate-180' : ''}`}
+            />
           </button>
-          <p className={`mt-3 text-sm text-gray-400 ${isRTL ? 'text-right' : ''}`}>
-            {t('settings.learnHow')}
-          </p>
+
+          {calcDropdownOpen && (
+            <div className="absolute z-20 mt-1.5 w-full bg-[#111827]/98 backdrop-blur-2xl border border-white/[0.08] rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.5)] overflow-hidden max-h-72 overflow-y-auto">
+              {calculationMethods.map((method) => (
+                <button
+                  key={method.value}
+                  onClick={() => handleCalculationMethodChange(method.value)}
+                  className={`
+                    w-full text-left py-3 px-4 transition-all duration-200 text-sm
+                    ${settings.calculationMethod === method.value
+                      ? 'bg-emerald-500/10 text-emerald-400 font-medium'
+                      : 'hover:bg-white/[0.04] text-gray-300'}
+                  `}
+                >
+                  <span>{method.name}</span>
+                  {settings.calculationMethod === method.value && (
+                    <div className="inline-block ml-2 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        
-        <div className="bg-gray-800 rounded-xl shadow-sm p-4 md:p-6">
-          <h3 className="font-medium mb-4 text-lg">
-            {t('settings.developer')}
-          </h3>
-          <div className="flex items-center mb-3">
-            <Code size={20} className={`text-green-400 ${isRTL ? 'ml-3' : 'mr-3'}`} />
-            <span className="font-medium text-lg">{t('settings.developedBy')} ByteFlipper</span>
+
+        {/* ═══════════ ASR MADHAB ═══════════ */}
+        <div className="glass-card rounded-2xl p-4">
+          <div className="flex items-center mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 flex items-center justify-center flex-shrink-0">
+              <Calculator className="text-cyan-400" size={20} />
+            </div>
+            <div className={`${isRTL ? 'mr-3' : 'ml-3'}`}>
+              <p className="text-sm text-gray-500">{t('settings.asrCalculation')}</p>
+            </div>
           </div>
-          <div className="space-y-2 mt-4 text-sm text-gray-400">
-            <p>
-              <a href="https://byteflipper.web.app" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:underline">
-                byteflipper.web.app
-              </a>
-            </p>
-            <p>
-              <a href="https://t.me/byteflipper" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:underline">
-                t.me/byteflipper
-              </a>
-            </p>
-            <p>
-              <a href="https://vk.com/byteflipper" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:underline">
-                vk.com/byteflipper
-              </a>
-            </p>
+          <div className="grid grid-cols-2 gap-2">
+            {([
+              { value: 0, label: "Shafi'i" },
+              { value: 1, label: "Hanafi" }
+            ]).map((madhab) => (
+              <button
+                key={madhab.value}
+                onClick={() => handleMadhabChange(madhab.value)}
+                className={`
+                  relative py-3 px-4 rounded-xl font-medium text-sm transition-all duration-300
+                  ${settings.madhab === madhab.value
+                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 shadow-[0_0_20px_rgba(16,185,129,0.08)]'
+                    : 'bg-white/[0.03] text-gray-400 border border-white/[0.06] hover:bg-white/[0.06] hover:text-gray-200'}
+                `}
+              >
+                {settings.madhab === madhab.value && (
+                  <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
+                )}
+                <span className="font-semibold">{madhab.label}</span>
+                <p className="text-xs mt-0.5 opacity-60">
+                  {madhab.value === 0 ? 'Standard' : 'Later Asr'}
+                </p>
+              </button>
+            ))}
           </div>
         </div>
+
+        {/* ═══════════ NOTIFICATIONS (toggle) ═══════════ */}
+        <button
+          onClick={toggleNotifications}
+          className="w-full glass-card rounded-2xl p-4 flex items-center transition-all duration-300 group"
+        >
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors duration-300 ${settings.notifications
+            ? 'bg-gradient-to-br from-emerald-500/20 to-emerald-600/10'
+            : 'bg-gradient-to-br from-gray-500/20 to-gray-600/10'
+            }`}>
+            {settings.notifications
+              ? <Bell className="text-emerald-400" size={20} />
+              : <BellOff className="text-gray-500" size={20} />}
+          </div>
+          <div className={`flex-1 ${isRTL ? 'mr-3 text-right' : 'ml-3 text-left'}`}>
+            <p className="text-sm text-gray-500">{t('settings.notifications')}</p>
+            <p className={`font-medium mt-0.5 ${settings.notifications ? 'text-emerald-400' : 'text-gray-400'}`}>
+              {settings.notifications
+                ? t('settings.notificationsEnabled')
+                : t('settings.enableNotifications')}
+            </p>
+          </div>
+          {/* Toggle switch */}
+          <div className={`
+            w-12 h-7 rounded-full relative transition-all duration-300 flex-shrink-0
+            ${settings.notifications
+              ? 'bg-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]'
+              : 'bg-white/[0.08]'}
+          `}>
+            <div className={`
+              absolute top-1 w-5 h-5 rounded-full transition-all duration-300 shadow-md
+              ${settings.notifications
+                ? 'left-6 bg-emerald-400'
+                : 'left-1 bg-gray-500'}
+            `} />
+          </div>
+        </button>
+
+        {/* ═══════════ DIVIDER ═══════════ */}
+        <div className="py-1">
+          <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+        </div>
+
+        {/* ═══════════ PRIVACY ═══════════ */}
+        <button
+          onClick={() => navigate('/privacy')}
+          className="w-full glass-card rounded-2xl p-4 flex items-center transition-all duration-300 group hover:bg-white/[0.04]"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500/20 to-rose-600/10 flex items-center justify-center flex-shrink-0">
+            <Shield className="text-rose-400" size={20} />
+          </div>
+          <div className={`flex-1 ${isRTL ? 'mr-3 text-right' : 'ml-3 text-left'}`}>
+            <p className="font-medium text-gray-200">{t('settings.privacyPolicy')}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t('settings.learnHow')}</p>
+          </div>
+          <ChevronRight size={18} className="text-gray-600 group-hover:text-gray-400 transition-colors duration-300 flex-shrink-0" />
+        </button>
+
+        {/* ═══════════ DEVELOPER CARD ═══════════ */}
+        <div className="glass-card rounded-2xl overflow-hidden">
+          {/* Dev header with gradient */}
+          <div className="relative p-5 pb-4 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/15 via-transparent to-transparent" />
+            <div className="relative flex items-center">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 flex items-center justify-center flex-shrink-0 border border-emerald-500/15">
+                <Code className="text-emerald-400" size={22} />
+              </div>
+              <div className={`${isRTL ? 'mr-3' : 'ml-3'}`}>
+                <p className="font-semibold text-gray-200">ByteFlipper</p>
+                <p className="text-xs text-gray-500 mt-0.5">{t('settings.developer')}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Links */}
+          <div className="divide-y divide-white/[0.04]">
+            {[
+              { icon: <Globe2 size={16} />, label: 'byteflipper.web.app', url: 'https://byteflipper.web.app', color: 'text-blue-400' },
+              { icon: <Send size={16} />, label: 'Telegram', url: 'https://t.me/byteflipper', color: 'text-sky-400' },
+              { icon: <Globe size={16} />, label: 'VK', url: 'https://vk.com/byteflipper', color: 'text-indigo-400' },
+            ].map((link) => (
+              <a
+                key={link.url}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center px-5 py-3 hover:bg-white/[0.03] transition-colors duration-200 group"
+              >
+                <span className={`${link.color} ${isRTL ? 'ml-3' : 'mr-3'}`}>{link.icon}</span>
+                <span className="text-sm text-gray-300 group-hover:text-gray-100 transition-colors duration-200">{link.label}</span>
+                <ExternalLink size={14} className={`${isRTL ? 'mr-auto' : 'ml-auto'} text-gray-700 group-hover:text-gray-500 transition-colors duration-200`} />
+              </a>
+            ))}
+          </div>
+
+          {/* Version */}
+          <div className="px-5 py-3 border-t border-white/[0.04]">
+            <p className="text-xs text-gray-600 text-center tabular-nums">Noorix v1.0.1</p>
+          </div>
+        </div>
+
       </div>
     </div>
   );

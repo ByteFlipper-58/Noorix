@@ -3,13 +3,19 @@
     "unknown": "غير معروف",
     "today": "اليوم",
     "tomorrow": "غداً",
-    "inDays": "في {days} أيام"
+    "inDays": "في {days} أيام",
+    "now": "الآن",
+    "closeGuide": "إغلاق الدليل",
+    "km": "كم"
   },
   "navigation": {
     "prayerTimes": "أوقات الصلاة",
     "ramadan": "رمضان",
     "islamicCalendar": "التقويم الإسلامي",
-    "location": "الموقع"
+    "location": "الموقع",
+    "qibla": "القبلة",
+    "tasbih": "تسبيح",
+    "more": "المزيد"
   },
   "prayerTimes": {
     "noLocationSelected": "لم يتم تحديد الموقع",
@@ -60,7 +66,8 @@
     "daysUntilRamadan": "{days} يوم حتى رمضان",
     "beginsOn": "يبدأ في {date}",
     "ramadanHasEnded": "انتهى رمضان",
-    "seeYouNextYear": "نراكم العام المقبل، إن شاء الله"
+    "seeYouNextYear": "نراكم العام المقبل، إن شاء الله",
+    "progress": "التقدم"
   },
   "location": {
     "locationSettings": "إعدادات الموقع",
@@ -72,7 +79,11 @@
     "searchCities": "البحث عن المدن...",
     "notFoundInCityList": "\"{query}\" غير موجود في قائمة المدن لدينا. يرجى استخدام \"تحديد موقعي\" بدلاً من ذلك.",
     "geolocationNotSupported": "تحديد الموقع الجغرافي غير مدعوم من متصفحك",
-    "errorGettingLocation": "خطأ في الحصول على الموقع: {message}"
+    "errorGettingLocation": "خطأ في الحصول على الموقع: {message}",
+    "description": "حدد الموقع لحساب أوقات الصلاة",
+    "detecting": "جارٍ التحديد...",
+    "detectDescription": "استخدام GPS للتحديد",
+    "tryDetect": "حاول تحديد موقعك تلقائيًا"
   },
   "settings": {
     "settings": "الإعدادات",
@@ -92,7 +103,8 @@
     "privacyPolicy": "سياسة الخصوصية",
     "learnHow": "تعرف على كيفية تعاملنا مع بياناتك",
     "developer": "المطور",
-    "developedBy": "تم التطوير بواسطة"
+    "developedBy": "تم التطوير بواسطة",
+    "customizeApp": "خصّص التطبيق حسب احتياجاتك"
   },
   "privacy": {
     "backToSettings": "العودة إلى الإعدادات",
@@ -182,5 +194,37 @@
     "eidFitr": "عيد الفطر",
     "arafah": "يوم عرفة",
     "eidAdha": "عيد الأضحى"
+  },
+  "qibla": {
+    "title": "اتجاه القبلة",
+    "direction": "اتجاه القبلة",
+    "degrees": "{deg}°",
+    "fromNorth": "من الشمال",
+    "compass": "البوصلة",
+    "yourLocation": "موقعك",
+    "meccaDirection": "اتجاه مكة المكرمة",
+    "enableCompass": "تفعيل البوصلة",
+    "compassNotSupported": "البوصلة غير مدعومة",
+    "needLocation": "حدد موقعك",
+    "calibrate": "يرجى تحريك جهازك في حركة رقم 8 لمعايرة البوصلة",
+    "currentHeading": "الاتجاه الحالي",
+    "qiblaDirection": "اتجاه القبلة"
+  },
+  "tasbih": {
+    "title": "عداد التسبيح",
+    "counter": "العداد",
+    "reset": "إعادة",
+    "target": "الهدف",
+    "completed": "اكتمل!",
+    "subhanAllah": "سبحان الله",
+    "alhamdulillah": "الحمد لله",
+    "allahuAkbar": "الله أكبر",
+    "custom": "مخصص",
+    "tapToCount": "انقر للعد",
+    "round": "الجولة {n}"
+  },
+  "ayah": {
+    "title": "آية اليوم",
+    "source": "القرآن"
   }
 }
