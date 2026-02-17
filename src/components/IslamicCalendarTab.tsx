@@ -2,124 +2,164 @@ import React, { useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Calendar, Star } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
-import { format, addDays, differenceInDays } from 'date-fns';
+import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { ar, ru, tr, enUS } from 'date-fns/locale';
 import { Language } from '../types';
+import type { Locale } from 'date-fns';
+import useHijriCalendarApi from '../hooks/useHijriCalendarApi';
+import {
+  getGregorianDateForHijriDate
+} from '../services/hijriCalendarService';
+
+interface ImportantDateEntry {
+  day: string;
+  date: Date;
+  name: string;
+  daysUntil: number;
+}
+
+interface ImportantDateMonth {
+  month: string;
+  dates: ImportantDateEntry[];
+}
 
 const IslamicCalendarTab: React.FC = () => {
   const { t, isRTL } = useLocalization();
   const { settings } = useAppContext();
-  
-  // Map language codes to date-fns locales
+  const { currentHijriDate, getGregorianDateForHijri } = useHijriCalendarApi();
+
   const localeMap: Record<Language, Locale> = {
     en: enUS,
     ru: ru,
     ar: ar,
     tr: tr,
-    tt: ru // Use Russian locale for Tatar as it's not available in date-fns
+    tt: ru
   };
 
   const formatDate = (dateStr: string | Date) => {
     const date = typeof dateStr === 'string' ? new Date(dateStr) : dateStr;
     const locale = localeMap[settings.language];
-    
+
     if (settings.language === 'ar') {
-      // For Arabic, use a custom format
       const formatted = format(date, 'dd MMMM yyyy', { locale });
-      // Convert numbers to Arabic numerals
-      return formatted.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+      return formatted.replace(/[0-9]/g, (digit) => '٠١٢٣٤٥٦٧٨٩'[Number(digit)]);
     }
-    
+
     if (settings.language === 'tt') {
-      // For Tatar, use Russian locale with custom month names
-      const formatted = format(date, 'dd MMMM yyyy', { locale: ru });
-      // You could add custom Tatar month name replacements here if needed
-      return formatted;
+      return format(date, 'dd MMMM yyyy', { locale: ru });
     }
-    
+
     return format(date, 'dd MMMM yyyy', { locale });
   };
-  
-  // Important Islamic dates for current and next year
-  const importantDates = useMemo(() => {
-    const currentYear = new Date().getFullYear();
-    const dates = [
+
+  const importantDates = useMemo<ImportantDateMonth[]>(() => {
+    if (!currentHijriDate) return [];
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+
+    const monthSpecs = [
       {
-        month: "Muharram",
+        month: 'Muharram',
         dates: [
-          { day: "1", date: new Date(2024, 6, 29), name: t('islamicCalendar.newYear') },
-          { day: "10", date: new Date(2024, 7, 7), name: t('islamicCalendar.ashura') }
+          { day: 1, month: 1, name: t('islamicCalendar.newYear') },
+          { day: 10, month: 1, name: t('islamicCalendar.ashura') }
         ]
       },
       {
         month: "Rabi' al-Awwal",
-        dates: [
-          { day: "12", date: new Date(2024, 9, 8), name: t('islamicCalendar.mawlid') }
-        ]
+        dates: [{ day: 12, month: 3, name: t('islamicCalendar.mawlid') }]
       },
       {
-        month: "Rajab",
-        dates: [
-          { day: "27", date: new Date(2025, 1, 15), name: t('islamicCalendar.israMiraj') }
-        ]
+        month: 'Rajab',
+        dates: [{ day: 27, month: 7, name: t('islamicCalendar.israMiraj') }]
       },
       {
         month: "Sha'ban",
+        dates: [{ day: 15, month: 8, name: t('islamicCalendar.laylatBaraah') }]
+      },
+      {
+        month: 'Ramadan',
         dates: [
-          { day: "15", date: new Date(2025, 2, 5), name: t('islamicCalendar.laylatBaraah') }
+          { day: 1, month: 9, name: t('islamicCalendar.ramadanStart') },
+          { day: 27, month: 9, name: t('islamicCalendar.laylatQadr') }
         ]
       },
       {
-        month: "Ramadan",
-        dates: [
-          { day: "1", date: new Date(2025, 2, 1), name: t('islamicCalendar.ramadanStart') },
-          { day: "27", date: new Date(2025, 2, 27), name: t('islamicCalendar.laylatQadr') }
-        ]
+        month: 'Shawwal',
+        dates: [{ day: 1, month: 10, name: t('islamicCalendar.eidFitr') }]
       },
       {
-        month: "Shawwal",
+        month: 'Dhu al-Hijjah',
         dates: [
-          { day: "1", date: new Date(2025, 2, 31), name: t('islamicCalendar.eidFitr') }
-        ]
-      },
-      {
-        month: "Dhu al-Hijjah",
-        dates: [
-          { day: "9", date: new Date(2025, 5, 27), name: t('islamicCalendar.arafah') },
-          { day: "10", date: new Date(2025, 5, 28), name: t('islamicCalendar.eidAdha') }
+          { day: 9, month: 12, name: t('islamicCalendar.arafah') },
+          { day: 10, month: 12, name: t('islamicCalendar.eidAdha') }
         ]
       }
     ];
 
-    // Add next year's dates
-    const nextYearDates = JSON.parse(JSON.stringify(dates));
-    nextYearDates.forEach((month: any) => {
-      month.dates.forEach((date: any) => {
-        date.date = addDays(new Date(date.date), 354); // Approximate Islamic year
-      });
-    });
+    return monthSpecs.map((monthData) => ({
+      month: monthData.month,
+      dates: monthData.dates.map((event) => {
+        const occursThisHijriYear =
+          event.month > currentHijriDate.month ||
+          (event.month === currentHijriDate.month && event.day >= currentHijriDate.day);
 
-    return [...dates, ...nextYearDates];
-  }, [t]);
+        const targetHijriDate = {
+          day: event.day,
+          month: event.month,
+          year: occursThisHijriYear ? currentHijriDate.year : currentHijriDate.year + 1
+        };
 
-  // Find the next holiday
-  const nextHoliday = useMemo(() => {
+        const gregorianDate =
+          getGregorianDateForHijri(targetHijriDate) ??
+          getGregorianDateForHijriDate(currentHijriDate, today, targetHijriDate);
+
+        return {
+          day: String(event.day),
+          date: gregorianDate,
+          name: event.name,
+          daysUntil: differenceInCalendarDays(gregorianDate, today)
+        };
+      })
+    }));
+  }, [currentHijriDate, getGregorianDateForHijri, t]);
+
+  const currentYearRange = useMemo(() => {
+    if (!currentHijriDate) return null;
     const today = new Date();
-    let nextEvent = null;
-    let minDiff = Infinity;
+    today.setHours(12, 0, 0, 0);
 
-    importantDates.forEach(month => {
-      month.dates.forEach(date => {
-        const eventDate = new Date(date.date);
-        const diff = differenceInDays(eventDate, today);
-        if (diff >= 0 && diff < minDiff) {
-          minDiff = diff;
-          nextEvent = { ...date, daysUntil: diff };
-        }
+    const currentYearStart =
+      getGregorianDateForHijri({ day: 1, month: 1, year: currentHijriDate.year }) ??
+      getGregorianDateForHijriDate(currentHijriDate, today, {
+        day: 1,
+        month: 1,
+        year: currentHijriDate.year
       });
-    });
 
-    return nextEvent;
+    const nextYearStart =
+      getGregorianDateForHijri({ day: 1, month: 1, year: currentHijriDate.year + 1 }) ??
+      getGregorianDateForHijriDate(currentHijriDate, today, {
+        day: 1,
+        month: 1,
+        year: currentHijriDate.year + 1
+      });
+
+    return {
+      hijriYear: currentHijriDate.year,
+      startDate: currentYearStart,
+      endDate: addDays(nextYearStart, -1)
+    };
+  }, [currentHijriDate, getGregorianDateForHijri]);
+
+  const nextHoliday = useMemo(() => {
+    const allHolidays = importantDates.flatMap((month) => month.dates);
+    if (allHolidays.length === 0) return null;
+
+    return allHolidays.reduce((closest, holiday) => {
+      if (!closest) return holiday;
+      return holiday.daysUntil < closest.daysUntil ? holiday : closest;
+    }, null as ImportantDateEntry | null);
   }, [importantDates]);
 
   return (
@@ -138,8 +178,14 @@ const IslamicCalendarTab: React.FC = () => {
               {t('islamicCalendar.currentYear')}
             </h3>
           </div>
-          <p className="text-3xl font-bold text-green-400 mb-2">1446 AH</p>
-          <p className="text-gray-400">{formatDate(new Date(2024, 6, 29))} - {formatDate(new Date(2025, 6, 17))}</p>
+          <p className="text-3xl font-bold text-green-400 mb-2">
+            {currentYearRange ? `${currentYearRange.hijriYear} AH` : '--'}
+          </p>
+          <p className="text-gray-400">
+            {currentYearRange
+              ? `${formatDate(currentYearRange.startDate)} - ${formatDate(currentYearRange.endDate)}`
+              : '--'}
+          </p>
         </div>
 
         {nextHoliday && (
@@ -156,7 +202,7 @@ const IslamicCalendarTab: React.FC = () => {
               <p className="text-xl font-medium text-amber-400">{nextHoliday.name}</p>
               <p className="text-gray-300">{formatDate(nextHoliday.date)}</p>
               <p className="text-sm text-amber-300/80">
-                {nextHoliday.daysUntil === 0 
+                {nextHoliday.daysUntil === 0
                   ? t('common.today')
                   : nextHoliday.daysUntil === 1
                     ? t('common.tomorrow')
@@ -168,7 +214,7 @@ const IslamicCalendarTab: React.FC = () => {
       </div>
 
       <div className="bg-gray-800 rounded-xl overflow-hidden">
-        {importantDates.slice(0, 7).map((monthData, index) => (
+        {importantDates.map((monthData, index) => (
           <div key={monthData.month} className={`p-6 ${index !== 0 ? 'border-t border-gray-700' : ''}`}>
             <h3 className="text-xl font-medium mb-4 text-green-400">{monthData.month}</h3>
             <div className="space-y-4">

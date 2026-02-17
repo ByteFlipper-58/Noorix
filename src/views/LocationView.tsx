@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import LocationTab from '../components/LocationTab';
 import { ArrowLeft } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
-import { useAppContext } from '../context/AppContext';
 import UserGuide from '../components/UserGuide';
 import PageTransition from '../components/PageTransition';
 
 const LocationView: React.FC = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const { t, isRTL } = useLocalization();
-  const { setIsFirstVisit } = useAppContext();
   const [fromGuide, setFromGuide] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
 

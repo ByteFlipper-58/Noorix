@@ -2,6 +2,19 @@ import axios from 'axios';
 import { PrayerTimesData, CalculationMethod, MadhabType } from '../types';
 
 const API_BASE_URL = 'https://api.aladhan.com/v1';
+const NOTIFICATION_SW_PATH = '/sw.js';
+
+interface ScheduledPrayerNotificationPayload {
+  title: string;
+  body: string;
+  tag: string;
+  scheduledTime: number;
+  icon: string;
+  badge: string;
+  url: string;
+}
+
+let notificationServiceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration | null> | null = null;
 
 export const fetchPrayerTimes = async (
   latitude: number,
@@ -127,23 +140,69 @@ export const requestNotificationPermission = async (): Promise<boolean> => {
   }
   
   if (Notification.permission === 'granted') {
+    await registerNotificationServiceWorker();
     return true;
   }
   
   if (Notification.permission !== 'denied') {
     const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      await registerNotificationServiceWorker();
+    }
     return permission === 'granted';
   }
   
   return false;
 };
 
-export const scheduleNotification = (prayerName: string, prayerTime: string): void => {
+export const registerNotificationServiceWorker = async (): Promise<ServiceWorkerRegistration | null> => {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return null;
+  }
+
+  if (!notificationServiceWorkerRegistrationPromise) {
+    notificationServiceWorkerRegistrationPromise = navigator.serviceWorker
+      .register(NOTIFICATION_SW_PATH)
+      .catch((error) => {
+        console.warn('Notification service worker registration failed:', error);
+        notificationServiceWorkerRegistrationPromise = null;
+        return null;
+      });
+  }
+
+  return notificationServiceWorkerRegistrationPromise;
+};
+
+const postScheduleToServiceWorker = async (
+  payload: ScheduledPrayerNotificationPayload
+): Promise<boolean> => {
+  const registration = await registerNotificationServiceWorker();
+  if (!registration) {
+    return false;
+  }
+
+  const worker = registration.active ?? registration.waiting ?? registration.installing;
+  if (!worker) {
+    return false;
+  }
+
+  worker.postMessage({
+    type: 'SCHEDULE_PRAYER_NOTIFICATION',
+    payload
+  });
+
+  return true;
+};
+
+export const scheduleNotification = async (prayerName: string, prayerTime: string): Promise<void> => {
   // Don't schedule if prayer name or time is invalid
   if (!prayerName || !prayerTime || prayerTime === '--:--') return;
+
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
   
   const now = new Date();
-  const [hours, minutes] = prayerTime.split(':').map(Number);
+  const cleanPrayerTime = prayerTime.split(' ')[0];
+  const [hours, minutes] = cleanPrayerTime.split(':').map(Number);
   
   // Don't schedule if time parsing fails
   if (isNaN(hours) || isNaN(minutes)) return;
@@ -151,15 +210,46 @@ export const scheduleNotification = (prayerName: string, prayerTime: string): vo
   const scheduledTime = new Date();
   scheduledTime.setHours(hours, minutes, 0, 0);
   
-  // If the prayer time has already passed today, don't schedule
-  if (scheduledTime <= now) return;
+  // If today's time has already passed, schedule for tomorrow
+  if (scheduledTime <= now) {
+    scheduledTime.setDate(scheduledTime.getDate() + 1);
+  }
   
+  const tag = `prayer-${prayerName.toLowerCase().replace(/\s+/g, '-')}-${scheduledTime.getTime()}`;
+  const payload: ScheduledPrayerNotificationPayload = {
+    title: `Prayer Time: ${prayerName}`,
+    body: `It's time for ${prayerName} prayer.`,
+    tag,
+    scheduledTime: scheduledTime.getTime(),
+    icon: '/favicon.svg',
+    badge: '/favicon.svg',
+    url: '/'
+  };
+
+  const sentToServiceWorker = await postScheduleToServiceWorker(payload);
+  if (sentToServiceWorker) {
+    return;
+  }
+
   const timeUntilPrayer = scheduledTime.getTime() - now.getTime();
   
-  setTimeout(() => {
-    new Notification(`Prayer Time: ${prayerName}`, {
-      body: `It's time for ${prayerName} prayer.`,
-      icon: '/favicon.svg'
+  window.setTimeout(async () => {
+    const registration = await navigator.serviceWorker?.getRegistration();
+    if (registration) {
+      await registration.showNotification(payload.title, {
+        body: payload.body,
+        icon: payload.icon,
+        badge: payload.badge,
+        tag: payload.tag,
+        data: { url: payload.url }
+      });
+      return;
+    }
+
+    new Notification(payload.title, {
+      body: payload.body,
+      icon: payload.icon,
+      tag: payload.tag
     });
   }, timeUntilPrayer);
 };

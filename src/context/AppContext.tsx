@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { UserSettings, Location, PrayerTimesData, CalculationMethod, MadhabType, Language } from '../types';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { UserSettings, Location, PrayerTimesData, Language } from '../types';
 import { fetchPrayerTimes } from '../services/prayerTimeService';
 import { detectUserLanguage } from '../services/languageService';
 import { logAnalyticsEvent, setAnalyticsUserProperties } from '../firebase/firebase';
+import { detectCurrentLocation } from '../services/locationService';
 
 interface AppContextType {
   settings: UserSettings;
@@ -26,6 +27,7 @@ const defaultSettings: UserSettings = {
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
+const AUTO_REFRESH_INTERVAL_MS = 30 * 60 * 1000;
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState<UserSettings>(() => {
@@ -44,13 +46,54 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isFirstVisit, setIsFirstVisit] = useState<boolean>(() => {
     return localStorage.getItem('noorixFirstVisit') !== 'false';
   });
+  const autoLocationCheckedRef = useRef(false);
+
+  const refreshPrayerTimes = useCallback(async () => {
+    if (!location) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await fetchPrayerTimes(
+        location.latitude,
+        location.longitude,
+        settings.calculationMethod,
+        settings.madhab
+      );
+      setPrayerTimes(data);
+
+      logAnalyticsEvent('prayer_times_fetched', {
+        calculationMethod: settings.calculationMethod,
+        madhab: settings.madhab
+      });
+    } catch (err) {
+      const errorMessage: Record<Language, string> = {
+        en: 'Failed to fetch prayer times. Please try again later.',
+        ru: 'Не удалось получить время молитв. Пожалуйста, попробуйте позже.',
+        ar: 'فشل في جلب أوقات الصلاة. يرجى المحاولة مرة أخرى لاحقًا.',
+        tr: 'Namaz vakitleri alınamadı. Lütfen daha sonra tekrar deneyin.',
+        tt: 'Намаз вакытларын алып булмады. Зинһар, соңрак яңадан карагыз.'
+      };
+      setError(errorMessage[settings.language]);
+      console.error(err);
+
+      logAnalyticsEvent('prayer_times_error', {
+        errorMessage: err instanceof Error ? err.message : 'Unknown error',
+        calculationMethod: settings.calculationMethod,
+        madhab: settings.madhab
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [location, settings.calculationMethod, settings.language, settings.madhab]);
 
   // Log first visit to analytics
   useEffect(() => {
     if (isFirstVisit) {
       logAnalyticsEvent('first_visit');
     }
-  }, []);
+  }, [isFirstVisit]);
 
   useEffect(() => {
     localStorage.setItem('prayerTimeSettings', JSON.stringify(settings));
@@ -88,15 +131,140 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     if (location) {
       localStorage.setItem('prayerTimeLocation', JSON.stringify(location));
-      refreshPrayerTimes();
-      
-      // Log location changes to analytics
+
       logAnalyticsEvent('location_updated', {
         hasCity: !!location.city,
         country: location.country || 'unknown'
       });
     }
-  }, [location, settings.calculationMethod, settings.madhab]);
+  }, [location]);
+
+  useEffect(() => {
+    if (!location) return;
+    void refreshPrayerTimes();
+  }, [location, refreshPrayerTimes]);
+
+  useEffect(() => {
+    if (!location) return;
+
+    const refreshTimer = window.setInterval(() => {
+      void refreshPrayerTimes();
+    }, AUTO_REFRESH_INTERVAL_MS);
+
+    return () => {
+      window.clearInterval(refreshTimer);
+    };
+  }, [location, refreshPrayerTimes]);
+
+  useEffect(() => {
+    if (!location) return;
+
+    let midnightTimer: number | null = null;
+    let isCancelled = false;
+
+    const scheduleNextMidnightRefresh = () => {
+      const now = new Date();
+      const nextMidnight = new Date(now);
+      nextMidnight.setHours(24, 0, 5, 0);
+
+      const delay = Math.max(nextMidnight.getTime() - now.getTime(), 0);
+      midnightTimer = window.setTimeout(async () => {
+        if (isCancelled) return;
+        await refreshPrayerTimes();
+        if (!isCancelled) {
+          scheduleNextMidnightRefresh();
+        }
+      }, delay);
+    };
+
+    scheduleNextMidnightRefresh();
+
+    return () => {
+      isCancelled = true;
+      if (midnightTimer !== null) {
+        window.clearTimeout(midnightTimer);
+      }
+    };
+  }, [location, refreshPrayerTimes]);
+
+  useEffect(() => {
+    if (autoLocationCheckedRef.current) {
+      return;
+    }
+    autoLocationCheckedRef.current = true;
+
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const shouldAutoDetect = async (): Promise<boolean> => {
+      if (!location) {
+        return true;
+      }
+
+      if (!navigator.permissions?.query) {
+        return false;
+      }
+
+      try {
+        const permissionStatus = await navigator.permissions.query({
+          name: 'geolocation' as PermissionName
+        });
+        return permissionStatus.state === 'granted';
+      } catch {
+        return false;
+      }
+    };
+
+    const detectAndUpdateLocation = async () => {
+      const shouldDetect = await shouldAutoDetect();
+      if (!shouldDetect) {
+        return;
+      }
+
+      try {
+        const detectedLocation = await detectCurrentLocation({
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 600000
+        });
+
+        if (isCancelled) return;
+
+        setLocationState((previousLocation) => {
+          const nextCity = detectedLocation.city ?? previousLocation?.city;
+          const nextCountry = detectedLocation.country ?? previousLocation?.country;
+
+          if (
+            previousLocation &&
+            Math.abs(previousLocation.latitude - detectedLocation.latitude) < 0.0001 &&
+            Math.abs(previousLocation.longitude - detectedLocation.longitude) < 0.0001 &&
+            previousLocation.city === nextCity &&
+            previousLocation.country === nextCountry
+          ) {
+            return previousLocation;
+          }
+
+          return {
+            latitude: detectedLocation.latitude,
+            longitude: detectedLocation.longitude,
+            city: nextCity,
+            country: nextCountry
+          };
+        });
+      } catch (autoLocationError) {
+        console.warn('Automatic geolocation detection failed:', autoLocationError);
+      }
+    };
+
+    void detectAndUpdateLocation();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [location]);
 
   useEffect(() => {
     if (!isFirstVisit) {
@@ -110,48 +278,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const updateSettings = (newSettings: Partial<UserSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
-  };
-
-  const refreshPrayerTimes = async () => {
-    if (!location) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const data = await fetchPrayerTimes(
-        location.latitude,
-        location.longitude,
-        settings.calculationMethod,
-        settings.madhab
-      );
-      setPrayerTimes(data);
-      
-      // Log successful prayer times fetch
-      logAnalyticsEvent('prayer_times_fetched', {
-        calculationMethod: settings.calculationMethod,
-        madhab: settings.madhab
-      });
-    } catch (err) {
-      const errorMessage: Record<Language, string> = {
-        'en': 'Failed to fetch prayer times. Please try again later.',
-        'ru': 'Не удалось получить время молитв. Пожалуйста, попробуйте позже.',
-        'ar': 'فشل في جلب أوقات الصلاة. يرجى المحاولة مرة أخرى لاحقًا.',
-        'tr': 'Namaz vakitleri alınamadı. Lütfen daha sonra tekrar deneyin.',
-        'tt': 'Намаз вакытларын алып булмады. Зинһар, соңрак яңадан карагыз.'
-      };
-      setError(errorMessage[settings.language]);
-      console.error(err);
-      
-      // Log error to analytics
-      logAnalyticsEvent('prayer_times_error', {
-        errorMessage: err instanceof Error ? err.message : 'Unknown error',
-        calculationMethod: settings.calculationMethod,
-        madhab: settings.madhab
-      });
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (

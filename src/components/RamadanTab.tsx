@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import RamadanTracker from './RamadanTracker';
-import { Calendar, Book, Star, Gift } from 'lucide-react';
+import { Calendar, Book, Star } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
-import { format } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import { ar, ru, tr, enUS } from 'date-fns/locale';
 import { Language } from '../types';
+import type { Locale } from 'date-fns';
+import useHijriCalendarApi from '../hooks/useHijriCalendarApi';
+import {
+  getGregorianDateForHijriDate
+} from '../services/hijriCalendarService';
 
 const RamadanTab: React.FC = () => {
   const { t, isRTL } = useLocalization();
   const { settings } = useAppContext();
+  const { currentHijriDate, getGregorianDateForHijri } = useHijriCalendarApi();
   
   // Map language codes to date-fns locales
   const localeMap: Record<Language, Locale> = {
@@ -28,7 +34,7 @@ const RamadanTab: React.FC = () => {
       // For Arabic, use a custom format
       const formatted = format(date, 'dd MMMM yyyy', { locale });
       // Convert numbers to Arabic numerals
-      return formatted.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+      return formatted.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[Number(d)]);
     }
     
     if (settings.language === 'tt') {
@@ -40,11 +46,52 @@ const RamadanTab: React.FC = () => {
     
     return format(date, 'dd MMMM yyyy', { locale });
   };
+
+  const importantDates = useMemo(() => {
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+
+    if (!currentHijriDate) {
+      return null;
+    }
+
+    const ramadanHijriYear = currentHijriDate.month > 9 ? currentHijriDate.year + 1 : currentHijriDate.year;
+    const ramadanStartHijriDate = {
+      day: 1,
+      month: 9,
+      year: ramadanHijriYear
+    };
+
+    const ramadanStartDate =
+      getGregorianDateForHijri(ramadanStartHijriDate) ??
+      getGregorianDateForHijriDate(currentHijriDate, today, ramadanStartHijriDate);
+
+    const laylatAlQadrDate =
+      getGregorianDateForHijri({ day: 27, month: 9, year: ramadanHijriYear }) ??
+      addDays(ramadanStartDate, 26);
+
+    const eidAlFitrDate =
+      getGregorianDateForHijri({ day: 1, month: 10, year: ramadanHijriYear }) ??
+      getGregorianDateForHijriDate(currentHijriDate, today, {
+        day: 1,
+        month: 10,
+        year: ramadanHijriYear
+      });
+
+    const lastDayOfRamadanDate = addDays(eidAlFitrDate, -1);
+
+    return {
+      ramadanStartDate,
+      laylatAlQadrDate,
+      lastDayOfRamadanDate,
+      eidAlFitrDate
+    };
+  }, [currentHijriDate, getGregorianDateForHijri]);
   
   return (
     <div className={`${isRTL ? 'text-right' : ''} max-w-4xl mx-auto`}>
       <h2 className="text-2xl font-semibold mb-4">
-        {t('ramadan.ramadan2025')}
+        {t('navigation.ramadan')}
       </h2>
       
       {/* Ramadan Tracker */}
@@ -67,7 +114,7 @@ const RamadanTab: React.FC = () => {
                 {t('ramadan.firstDayRamadan')}
               </span>
               <span className="text-gray-400 ml-2 text-right">
-                {formatDate(new Date(2025, 2, 1))}
+                {importantDates ? formatDate(importantDates.ramadanStartDate) : '--:--'}
               </span>
             </li>
             <li className="flex justify-between items-center">
@@ -75,7 +122,7 @@ const RamadanTab: React.FC = () => {
                 {t('ramadan.laylatAlQadr')}
               </span>
               <span className="text-gray-400 ml-2 text-right">
-                {formatDate(new Date(2025, 2, 27))}
+                {importantDates ? formatDate(importantDates.laylatAlQadrDate) : '--:--'}
               </span>
             </li>
             <li className="flex justify-between items-center">
@@ -83,7 +130,7 @@ const RamadanTab: React.FC = () => {
                 {t('ramadan.lastDayRamadan')}
               </span>
               <span className="text-gray-400 ml-2 text-right">
-                {formatDate(new Date(2025, 2, 30))}
+                {importantDates ? formatDate(importantDates.lastDayOfRamadanDate) : '--:--'}
               </span>
             </li>
             <li className="flex justify-between items-center">
@@ -91,7 +138,7 @@ const RamadanTab: React.FC = () => {
                 {t('ramadan.eidAlFitr')}
               </span>
               <span className="text-gray-400 ml-2 text-right">
-                {formatDate(new Date(2025, 2, 31))}
+                {importantDates ? formatDate(importantDates.eidAlFitrDate) : '--:--'}
               </span>
             </li>
           </ul>

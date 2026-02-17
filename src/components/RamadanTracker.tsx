@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { format, differenceInDays, addDays, isWithinInterval } from 'date-fns';
+import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { ar, ru, tr, enUS } from 'date-fns/locale';
 import { Calendar, Sunrise, Sunset, Moon, Star, Gift } from 'lucide-react';
 import useLocalization from '../hooks/useLocalization';
 import { Language } from '../types';
+import type { Locale } from 'date-fns';
+import useHijriCalendarApi from '../hooks/useHijriCalendarApi';
+import {
+  getGregorianDateForHijriDate,
+  getHijriMonthLength
+} from '../services/hijriCalendarService';
 
 interface RamadanTrackerProps {
   className?: string;
@@ -13,15 +19,7 @@ interface RamadanTrackerProps {
 const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
   const { settings, prayerTimes } = useAppContext();
   const { t, isRTL } = useLocalization();
-  const [ramadanInfo, setRamadanInfo] = useState({
-    isRamadan: false,
-    isEidPeriod: false,
-    startDate: new Date(2026, 2, 16), // March 1, 2025
-    endDate: new Date(2025, 3, 19), // March 30, 2025
-    currentDay: 0,
-    daysLeft: 0,
-    totalDays: 30,
-  });
+  const { currentHijriDate, getGregorianDateForHijri } = useHijriCalendarApi();
 
   // Map language codes to date-fns locales
   const localeMap: Record<Language, Locale> = {
@@ -31,45 +29,109 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
     tr: tr,
     tt: ru // Use Russian locale for Tatar as it's not available in date-fns
   };
-  
-  useEffect(() => {
+
+  const ramadanInfo = useMemo(() => {
     const today = new Date();
-    
-    // For demonstration purposes, we'll simulate that Ramadan is happening now
-    const simulatedToday = new Date(2025, 2, today.getDate() > 30 ? 30 : today.getDate());
-    
-    // Calculate Eid period (3 days after Ramadan)
-    const eidStartDate = addDays(ramadanInfo.endDate, 1);
-    const eidEndDate = addDays(ramadanInfo.endDate, 3);
-    
-    // Check if we're in Ramadan period
-    const isRamadan = simulatedToday >= ramadanInfo.startDate && simulatedToday <= ramadanInfo.endDate;
-    
-    // Check if we're in Eid period (3 days after Ramadan)
-    const isEidPeriod = isWithinInterval(simulatedToday, { start: eidStartDate, end: eidEndDate });
-    
-    // Calculate which day of Ramadan it is and days left
-    let daysSinceStart = 0;
-    let daysLeft = 0;
+    today.setHours(12, 0, 0, 0);
+
+    if (!currentHijriDate) {
+      const fallbackStart = addDays(today, 1);
+      return {
+        isRamadan: false,
+        isEidPeriod: false,
+        startDate: fallbackStart,
+        endDate: addDays(fallbackStart, 29),
+        currentDay: 0,
+        daysLeft: 1,
+        totalDays: 30
+      };
+    }
+
+    const currentRamadanStartDate =
+      getGregorianDateForHijri({ day: 1, month: 9, year: currentHijriDate.year }) ??
+      getGregorianDateForHijriDate(currentHijriDate, today, {
+        day: 1,
+        month: 9,
+        year: currentHijriDate.year
+      });
+
+    const currentEidDate =
+      getGregorianDateForHijri({ day: 1, month: 10, year: currentHijriDate.year }) ??
+      getGregorianDateForHijriDate(currentHijriDate, today, {
+        day: 1,
+        month: 10,
+        year: currentHijriDate.year
+      });
+
+    const currentRamadanTotalDays = Math.max(
+      differenceInCalendarDays(currentEidDate, currentRamadanStartDate),
+      getHijriMonthLength(currentHijriDate.year, 9)
+    );
+
+    const currentRamadanEndDate = addDays(currentEidDate, -1);
+
+    const isRamadan = currentHijriDate.month === 9;
+    const isEidPeriod = currentHijriDate.month === 10 && currentHijriDate.day <= 3;
 
     if (isRamadan) {
-      // During Ramadan, calculate current day and days remaining
-      daysSinceStart = differenceInDays(simulatedToday, ramadanInfo.startDate) + 1;
-      daysLeft = differenceInDays(ramadanInfo.endDate, simulatedToday);
-    } else if (!isEidPeriod) {
-      // After Eid period, calculate days until next Ramadan
-      const nextRamadanStart = new Date(2026, 1, 19); // February 19, 2026
-      daysLeft = differenceInDays(nextRamadanStart, simulatedToday);
+      return {
+        isRamadan: true,
+        isEidPeriod: false,
+        startDate: currentRamadanStartDate,
+        endDate: currentRamadanEndDate,
+        currentDay: currentHijriDate.day,
+        daysLeft: Math.max(differenceInCalendarDays(currentEidDate, today), 0),
+        totalDays: currentRamadanTotalDays
+      };
     }
-    
-    setRamadanInfo(prev => ({
-      ...prev,
-      isRamadan,
-      isEidPeriod,
-      currentDay: daysSinceStart,
-      daysLeft: daysLeft,
-    }));
-  }, []);
+
+    if (isEidPeriod) {
+      return {
+        isRamadan: false,
+        isEidPeriod: true,
+        startDate: currentRamadanStartDate,
+        endDate: currentRamadanEndDate,
+        currentDay: 0,
+        daysLeft: 0,
+        totalDays: currentRamadanTotalDays
+      };
+    }
+
+    const upcomingRamadanYear = currentHijriDate.month < 9 ? currentHijriDate.year : currentHijriDate.year + 1;
+    const upcomingRamadanHijriDate = {
+      day: 1,
+      month: 9,
+      year: upcomingRamadanYear
+    };
+    const upcomingEidHijriDate = {
+      day: 1,
+      month: 10,
+      year: upcomingRamadanYear
+    };
+
+    const upcomingRamadanStartDate =
+      getGregorianDateForHijri(upcomingRamadanHijriDate) ??
+      getGregorianDateForHijriDate(currentHijriDate, today, upcomingRamadanHijriDate);
+
+    const upcomingEidDate =
+      getGregorianDateForHijri(upcomingEidHijriDate) ??
+      getGregorianDateForHijriDate(currentHijriDate, today, upcomingEidHijriDate);
+
+    const totalDays = Math.max(
+      differenceInCalendarDays(upcomingEidDate, upcomingRamadanStartDate),
+      getHijriMonthLength(upcomingRamadanYear, 9)
+    );
+
+    return {
+      isRamadan: false,
+      isEidPeriod: false,
+      startDate: upcomingRamadanStartDate,
+      endDate: addDays(upcomingEidDate, -1),
+      currentDay: 0,
+      daysLeft: Math.max(differenceInCalendarDays(upcomingRamadanStartDate, today), 0),
+      totalDays
+    };
+  }, [currentHijriDate, getGregorianDateForHijri]);
   
   // Get Suhoor and Iftar times from prayer times
   const suhoorTime = prayerTimes?.timings?.Fajr || '--:--';
@@ -82,7 +144,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
       // For Arabic, use a custom format
       const formatted = format(date, 'dd MMMM yyyy', { locale });
       // Convert numbers to Arabic numerals
-      return formatted.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+      return formatted.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[Number(d)]);
     }
     
     if (settings.language === 'tt') {
@@ -193,7 +255,7 @@ const RamadanTracker: React.FC<RamadanTrackerProps> = ({ className = '' }) => {
           <div className={`flex items-center justify-center ${isRTL ? 'flex-row-reverse' : ''}`}>
             <Calendar className={`text-green-400 ${isRTL ? 'ml-2' : 'mr-2'}`} size={18} />
             <p className="text-gray-300 text-sm">
-              {t('ramadanTracker.beginsOn', { date: formatDate(new Date(2026, 1, 19)) })}
+              {t('ramadanTracker.beginsOn', { date: formatDate(ramadanInfo.startDate) })}
             </p>
           </div>
         </div>

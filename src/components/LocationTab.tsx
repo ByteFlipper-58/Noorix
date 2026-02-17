@@ -4,55 +4,33 @@ import { popularCities } from '../data/cities';
 import { MapPin, Navigation, Search } from 'lucide-react';
 import { Location, City } from '../types';
 import useLocalization from '../hooks/useLocalization';
+import { detectCurrentLocation } from '../services/locationService';
 
 const LocationTab: React.FC = () => {
-  const { location, setLocation, settings } = useAppContext();
+  const { location, setLocation } = useAppContext();
   const { t, isRTL } = useLocalization();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  const detectLocation = () => {
+  const detectLocation = async () => {
     setLoading(true);
     setError(null);
-    
-    if (!navigator.geolocation) {
-      setError(t('location.geolocationNotSupported'));
+
+    try {
+      const detectedLocation = await detectCurrentLocation();
+      const newLocation: Location = {
+        ...detectedLocation,
+        city: detectedLocation.city || t('common.unknown'),
+        country: detectedLocation.country || t('common.unknown')
+      };
+      setLocation(newLocation);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('common.unknown');
+      setError(t('location.errorGettingLocation', { message }));
+    } finally {
       setLoading(false);
-      return;
     }
-    
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const newLocation: Location = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        };
-        
-        // Try to get city name using reverse geocoding
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLocation.latitude}&lon=${newLocation.longitude}`)
-          .then(response => response.json())
-          .then(data => {
-            if (data.address) {
-              newLocation.city = data.address.city || data.address.town || data.address.village || 
-                t('common.unknown');
-              newLocation.country = data.address.country || 
-                t('common.unknown');
-            }
-            setLocation(newLocation);
-            setLoading(false);
-          })
-          .catch(() => {
-            // If reverse geocoding fails, still set the location with coordinates only
-            setLocation(newLocation);
-            setLoading(false);
-          });
-      },
-      (error) => {
-        setError(t('location.errorGettingLocation', { message: error.message }));
-        setLoading(false);
-      }
-    );
   };
   
   const selectCity = (city: City) => {

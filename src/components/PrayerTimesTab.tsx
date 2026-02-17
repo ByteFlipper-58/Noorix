@@ -56,7 +56,7 @@ const PrayerTimesTab: React.FC = () => {
         
         // Schedule notification for next prayer if enabled
         if (settings.notifications) {
-          scheduleNotification(next.name, next.time);
+          void scheduleNotification(next.name, next.time);
         }
 
         // Log next prayer to analytics
@@ -292,7 +292,7 @@ const PrayerTimeRow: React.FC<PrayerTimeRowProps> = ({
       ${isInfo ? 'bg-gray-700/30 text-gray-400' : ''}
     `}>
       <span className={`
-        font-medium mr-2
+        font-medium ${isRTL ? 'ml-2' : 'mr-2'}
         ${isNext ? 'text-green-400' : ''}
       `}>
         {name}
@@ -311,7 +311,7 @@ const PrayerTimeRow: React.FC<PrayerTimeRowProps> = ({
       )}
       
       <span className={`
-        ml-auto
+        ${isRTL ? 'mr-auto' : 'ml-auto'}
         ${isNext ? 'text-green-400 font-medium' : ''}
       `}>
         {time}
